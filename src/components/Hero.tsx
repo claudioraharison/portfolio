@@ -15,13 +15,13 @@ const Hero: React.FC = () => {
           <div className="flex space-x-4">
             <a 
               href="#projects" 
-              className="bg-primary text-blue-500 px-8 py-3 rounded-lg font-semibold hover:bg-secondary hover:text-blue-300 transition"
+              className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition"
             >
               Voir mes projets
             </a>
             <a 
               href="#contact" 
-              className="border border-primary text-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary hover:text-blue-500 transition"
+              className="border border-primary text-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary hover:text-white transition"
             >
               Me contacter
             </a>
