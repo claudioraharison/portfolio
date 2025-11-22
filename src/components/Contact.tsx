@@ -6,6 +6,8 @@ const Contact: React.FC = () => {
     email: '',
     message: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -14,12 +16,39 @@ const Contact: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Ici vous pouvez ajouter la logique d'envoi du formulaire
-    console.log('Formulaire envoyé:', formData);
-    alert('Message envoyé avec succès!');
-    setFormData({ name: '', email: '', message: '' });
+    setIsLoading(true);
+    setSubmitStatus('idle');
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('message', formData.message);
+      formDataToSend.append('_subject', `Nouveau message de ${formData.name} - Portfolio`);
+      formDataToSend.append('_template', 'table');
+      
+      // Envoyer le formulaire à FormSubmit
+      const response = await fetch('https://formsubmit.co/claudio.raharison@gmail.com', {
+        method: 'POST',
+        body: formDataToSend
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsLoading(false);
+      // Reset du statut après 5 secondes
+      setTimeout(() => setSubmitStatus('idle'), 5000);
+    }
   };
 
   return (
@@ -80,7 +109,8 @@ const Contact: React.FC = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                disabled={isLoading}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
                 placeholder="Votre nom"
               />
             </div>
@@ -96,7 +126,8 @@ const Contact: React.FC = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                disabled={isLoading}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
                 placeholder="votre@email.com"
               />
             </div>
@@ -111,17 +142,48 @@ const Contact: React.FC = () => {
                 value={formData.message}
                 onChange={handleChange}
                 required
+                disabled={isLoading}
                 rows={5}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
                 placeholder="Votre message..."
               />
             </div>
+
+            {/* Messages de statut */}
+            {submitStatus === 'success' && (
+              <div className="p-4 bg-green-100 text-green-700 rounded-lg border border-green-200">
+                <div className="flex items-center">
+                  <span className="text-lg mr-2">✅</span>
+                  <span>Message envoyé avec succès ! Je vous répondrai rapidement.</span>
+                </div>
+              </div>
+            )}
+            
+            {submitStatus === 'error' && (
+              <div className="p-4 bg-red-100 text-red-700 rounded-lg border border-red-200">
+                <div className="flex items-center">
+                  <span className="text-lg mr-2">❌</span>
+                  <span>Erreur lors de l'envoi. Veuillez réessayer ou me contacter directement par email.</span>
+                </div>
+              </div>
+            )}
             
             <button
               type="submit"
-              className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-secondary transition"
+              disabled={isLoading}
+              className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
-              Envoyer le message
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Envoi en cours...
+                </>
+              ) : (
+                '📨 Envoyer le message'
+              )}
             </button>
           </form>
         </div>
