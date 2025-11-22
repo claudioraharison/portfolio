@@ -5,7 +5,7 @@ const About: React.FC = () => {
     <section id="about" className="py-20 bg-white">
       <div className="container mx-auto px-6">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">À propos de moi</h2>
+          <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">Mes propos</h2>
           
           <div className="grid lg:grid-cols-2 gap-8 items-start">
             {/* Partie texte - Alignement parfait */}
