@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import profileImage from '../assets/claudio.png';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -75,9 +76,31 @@ const Header: React.FC = () => {
     <header className="fixed top-0 w-full bg-white/90 backdrop-blur-sm z-50 shadow-sm">
       <nav className="container mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
-          <div className="text-2xl font-bold text-primary">
-            <div>Nirina Claudio</div>
-            <div className="text-lg">RAHARISON</div>
+          <div className="flex items-center space-x-4">
+            {/* Photo de profil */}
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary shadow-md">
+              <img 
+                src={profileImage}
+                alt="Nirina Claudio RAHARISON"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback si l'image ne charge pas
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              {/* Fallback avatar si pas d'image */}
+              <div className="hidden w-full h-full bg-primary flex items-center justify-center text-white font-bold text-lg">
+                NC
+              </div>
+            </div>
+            
+            {/* Nom et prénom */}
+            <div className="text-2xl font-bold text-primary">
+              <div>Nirina Claudio</div>
+              <div className="text-lg">RAHARISON</div>
+            </div>
           </div>
           
           {/* Menu desktop - caché sur mobile */}
