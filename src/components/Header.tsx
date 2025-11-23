@@ -98,8 +98,8 @@ const Header: React.FC = () => {
             
             {/* Nom et prénom */}
             <div className="text-2xl font-bold text-primary">
-              <div>Nirina Claudio</div>
-              <div className="text-lg">RAHARISON</div>
+              <div className="text-xl">Nirina Claudio</div>
+              <div>RAHARISON</div>
             </div>
           </div>
           
