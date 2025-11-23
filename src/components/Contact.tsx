@@ -18,35 +18,47 @@ const Contact: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation basique
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setSubmitStatus('error');
+      return;
+    }
+
     setIsLoading(true);
     setSubmitStatus('idle');
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('message', formData.message);
-      formDataToSend.append('_subject', `Nouveau message de ${formData.name} - Portfolio`);
+      formDataToSend.append('name', formData.name.trim());
+      formDataToSend.append('email', formData.email.trim());
+      formDataToSend.append('message', formData.message.trim());
+      formDataToSend.append('_subject', `🎯 Portfolio - Message de ${formData.name}`);
+      formDataToSend.append('_replyto', formData.email);
       formDataToSend.append('_template', 'table');
-      
-      // Envoyer le formulaire à FormSubmit
-      const response = await fetch('https://formsubmit.co/claudio.raharison@gmail.com', {
+      formDataToSend.append('_captcha', 'false');
+
+      const response = await fetch('https://formsubmit.co/ajax/claudio.raharison@gmail.com', {
         method: 'POST',
-        body: formDataToSend
+        body: formDataToSend,
+        headers: {
+          'Accept': 'application/json'
+        }
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (data.success === 'true' || response.ok) {
         setSubmitStatus('success');
         setFormData({ name: '', email: '', message: '' });
       } else {
-        setSubmitStatus('error');
+        throw new Error('Échec de l\'envoi');
       }
     } catch (error) {
       console.error('Erreur:', error);
       setSubmitStatus('error');
     } finally {
       setIsLoading(false);
-      // Reset du statut après 5 secondes
       setTimeout(() => setSubmitStatus('idle'), 5000);
     }
   };
@@ -110,8 +122,8 @@ const Contact: React.FC = () => {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
-                placeholder="Votre nom"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 transition duration-200"
+                placeholder="Votre nom complet"
               />
             </div>
             
@@ -127,7 +139,7 @@ const Contact: React.FC = () => {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 transition duration-200"
                 placeholder="votre@email.com"
               />
             </div>
@@ -144,26 +156,32 @@ const Contact: React.FC = () => {
                 required
                 disabled={isLoading}
                 rows={5}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50"
-                placeholder="Votre message..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 transition duration-200 resize-vertical"
+                placeholder="Décrivez votre projet, vos besoins ou posez-moi vos questions..."
               />
             </div>
 
             {/* Messages de statut */}
             {submitStatus === 'success' && (
-              <div className="p-4 bg-green-100 text-green-700 rounded-lg border border-green-200">
+              <div className="p-4 bg-green-50 text-green-800 rounded-lg border border-green-200 animate-fadeIn">
                 <div className="flex items-center">
-                  <span className="text-lg mr-2">✅</span>
-                  <span>Message envoyé avec succès ! Je vous répondrai rapidement.</span>
+                  <span className="text-lg mr-3">✅</span>
+                  <div>
+                    <p className="font-medium">Message envoyé avec succès !</p>
+                    <p className="text-sm mt-1">Je vous répondrai dans les plus brefs délais.</p>
+                  </div>
                 </div>
               </div>
             )}
             
             {submitStatus === 'error' && (
-              <div className="p-4 bg-red-100 text-red-700 rounded-lg border border-red-200">
+              <div className="p-4 bg-red-50 text-red-800 rounded-lg border border-red-200 animate-fadeIn">
                 <div className="flex items-center">
-                  <span className="text-lg mr-2">❌</span>
-                  <span>Erreur lors de l'envoi. Veuillez réessayer ou me contacter directement par email.</span>
+                  <span className="text-lg mr-3">❌</span>
+                  <div>
+                    <p className="font-medium">Erreur lors de l'envoi</p>
+                    <p className="text-sm mt-1">Veuillez réessayer ou me contacter directement par email.</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -171,7 +189,7 @@ const Contact: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-secondary transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               {isLoading ? (
                 <>
@@ -182,7 +200,10 @@ const Contact: React.FC = () => {
                   Envoi en cours...
                 </>
               ) : (
-                '📨 Envoyer le message'
+                <>
+                  <span className="mr-2">📨</span>
+                  Envoyer le message
+                </>
               )}
             </button>
           </form>
