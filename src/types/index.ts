@@ -10,8 +10,8 @@ export interface Project {
 
 export interface Skill {
   name: string;
-  level: number;
-  category: 'frontend' | 'backend' | 'tools';
+  level?: number;
+  category: 'frontend' | 'backend' | 'tools' | 'autres';
 }
 
 export interface Experience {

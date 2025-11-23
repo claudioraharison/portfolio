@@ -28,17 +28,45 @@ export const projects: Project[] = [
 ];
 
 export const skills: Skill[] = [
-  { name: "React", level: 85, category: "frontend" },
-  { name: "TypeScript", level: 80, category: "frontend" },
-  { name: "Tailwind CSS", level: 90, category: "frontend" },
-  { name: "JavaScript", level: 88, category: "frontend" },
-  { name: "HTML/CSS", level: 95, category: "frontend" },
-  { name: "Node.js", level: 75, category: "backend" },
-  { name: "NestJS", level: 70, category: "backend" },
-  { name: "Express", level: 78, category: "backend" },
-  { name: "PostgreSQL", level: 72, category: "backend" },
-  { name: "Git", level: 85, category: "tools" },
-  { name: "Figma", level: 65, category: "tools" },
+  // Frontend
+  { name: "HTML5", category: "frontend" },
+  { name: "CSS3", category: "frontend" },
+  { name: "JavaScript", category: "frontend" },
+  { name: "React", category: "frontend" },
+  { name: "TypeScript", category: "frontend" },
+  { name: "Tailwind CSS", category: "frontend" },
+  { name: "Bootstrap", category: "frontend" },
+  { name: "SASS", category: "frontend" },
+  
+  // Backend
+  { name: "Node.js", category: "backend" },
+  { name: "Express.js", category: "backend" },
+  { name: "NestJS", category: "backend" },
+  { name: "PHP", category: "backend" },
+  { name: "MySQL", category: "backend" },
+  { name: "PostgreSQL", category: "backend" },
+  { name: "Redis", category: "backend" },
+  
+  // Outils & Technologies
+  { name: "Git", category: "tools" },
+  { name: "Visual Studio Code", category: "tools" },
+  { name: "Figma", category: "tools" },
+  { name: "Postman", category: "tools" },
+  
+  // Compétences supplémentaires du CV
+  { name: "Python", category: "autres" },
+  { name: "SQL", category: "autres" },
+  { name: "QGIS", category: "autres" },
+  { name: "ArcGIS", category: "autres" },
+  { name: "AutoCAD", category: "autres" },
+  { name: "Revit", category: "autres" },
+  { name: "Adobe Photoshop", category: "autres" },
+  { name: "Adobe Illustrator", category: "autres" },
+  { name: "R", category: "autres" },
+  { name: "SGeMS", category: "autres" },
+  { name: "Microsoft Office", category: "autres" },
+  { name: "ODK Collect", category: "autres" },
+  { name: "PSPP", category: "autres" },
 ];
 
 export const experiences: Experience[] = [
