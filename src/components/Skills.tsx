@@ -6,12 +6,75 @@ import france from '../assets/3178055-drapeau-francais-de-france-photo.jpg';
 import usa from '../assets/8093518-usa-american-flag-set-background-grunge-old-american-flag-vintage-gratuit-photo.jpg';
 import germany from '../assets/flag-wave-250.png';
 
+// Import des icônes depuis React Icons
+import { 
+  SiHtml5, SiCss3, SiJavascript, SiReact, SiTypescript,
+  SiTailwindcss, SiBootstrap, SiSass, SiNodedotjs,
+  SiExpress, SiNestjs, SiPhp, SiMysql, SiPostgresql,
+  SiRedis, SiGit, SiFigma, SiPostman,
+  SiPython, SiAdobephotoshop, SiAdobeillustrator, SiR
+} from 'react-icons/si';
+import { 
+  TbSql, TbMap, TbBuildingSkyscraper
+} from 'react-icons/tb';
+import { 
+  FaDatabase, FaTools, FaQuestionCircle, FaMicrosoft
+} from 'react-icons/fa';
+import { 
+  VscVscode 
+} from 'react-icons/vsc';
+
 interface SkillCategories {
   frontend: Skill[];
   backend: Skill[];
   tools: Skill[];
   autres: Skill[];
 }
+
+// Mapping des icônes pour chaque compétence
+const skillIcons: { [key: string]: React.ComponentType<any> } = {
+  // Frontend
+  "HTML5": SiHtml5,
+  "CSS3": SiCss3,
+  "JavaScript": SiJavascript,
+  "React": SiReact,
+  "TypeScript": SiTypescript,
+  "Tailwind CSS": SiTailwindcss,
+  "Bootstrap": SiBootstrap,
+  "SASS": SiSass,
+  
+  // Backend
+  "Node.js": SiNodedotjs,
+  "Express.js": SiExpress,
+  "NestJS": SiNestjs,
+  "PHP": SiPhp,
+  "MySQL": SiMysql,
+  "PostgreSQL": SiPostgresql,
+  "Redis": SiRedis,
+  
+  // Outils & Technologies
+  "Git": SiGit,
+  "Visual Studio Code": VscVscode,
+  "Figma": SiFigma,
+  "Postman": SiPostman,
+  
+  // Compétences supplémentaires
+  "Python": SiPython,
+  "SQL": TbSql,
+  "QGIS": TbMap,
+  "ArcGIS": TbMap,
+  "AutoCAD": TbBuildingSkyscraper,
+  "Revit": TbBuildingSkyscraper,
+  "Adobe Photoshop": SiAdobephotoshop,
+  "Adobe Illustrator": SiAdobeillustrator,
+  "R": SiR,
+  "Microsoft Office": FaMicrosoft,
+  
+  // Icônes par défaut pour celles non disponibles
+  "SGeMS": FaTools,
+  "ODK Collect": FaDatabase,
+  "PSPP": FaMicrosoft,
+};
 
 const Skills: React.FC = () => {
   const skillCategories: SkillCategories = {
@@ -21,11 +84,16 @@ const Skills: React.FC = () => {
     autres: skills.filter((skill: Skill) => skill.category === 'autres')
   };
 
-  const SkillTag = ({ name }: { name: string }) => (
-    <div className="bg-white border-2 border-primary/20 rounded-xl px-6 py-4 text-center hover:bg-primary hover:text-white transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-default">
-      <span className="font-semibold text-gray-900 hover:text-white transition-colors">{name}</span>
-    </div>
-  );
+  const SkillTag = ({ name }: { name: string }) => {
+    const IconComponent = skillIcons[name] || FaQuestionCircle;
+    
+    return (
+      <div className="bg-white border-2 border-primary/20 rounded-xl px-6 py-4 text-center hover:bg-primary hover:text-white transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-default flex flex-col items-center justify-center">
+        <IconComponent className="w-8 h-8 mb-2 text-gray-700 hover:text-white transition-colors" />
+        <span className="font-semibold text-gray-900 hover:text-white transition-colors">{name}</span>
+      </div>
+    );
+  };
 
   const SkillCategory = ({ title, skills, color = 'primary' }: { 
     title: string; 
@@ -75,16 +143,20 @@ const Skills: React.FC = () => {
           <div className="mb-12">
             <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">Compétences Techniques Diverses</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {skillCategories.autres.map((skill: Skill, index: number) => (
-                <div key={index} className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 text-center hover:bg-gray-200 transition-colors cursor-default">
-                  <span className="font-medium text-gray-800">{skill.name}</span>
-                </div>
-              ))}
+              {skillCategories.autres.map((skill: Skill, index: number) => {
+                const IconComponent = skillIcons[skill.name] || FaQuestionCircle;
+                return (
+                  <div key={index} className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 text-center hover:bg-gray-200 transition-colors cursor-default flex flex-col items-center justify-center">
+                    <IconComponent className="w-8 h-8 mb-2 text-gray-700" />
+                    <span className="font-medium text-gray-800">{skill.name}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Section Langues */}
+        {/* Section Langues - Inchangée */}
         <div className="mt-16 bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
           <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">Compétences Linguistiques</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
