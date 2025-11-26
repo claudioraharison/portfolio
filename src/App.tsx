@@ -1,4 +1,5 @@
 import React from 'react';
+import { AutoTranslationProvider } from './contexts/AutoTranslationContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -10,15 +11,17 @@ import './index.css';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <Header />
-      <Hero />
-      <About />
-      <Skills />
-      <Projects />
-      <Experience />
-      <Contact />
-    </div>
+    <AutoTranslationProvider>
+      <div className="App">
+        <Header />
+        <Hero />
+        <About />
+        <Skills />
+        <Projects />
+        <Experience />
+        <Contact />
+      </div>
+    </AutoTranslationProvider>
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,32 @@ const Contact: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Textes traduits
+  const title = useAutoTranslatedText('contact.title', 'Contact');
+  const subtitle = useAutoTranslatedText('contact.subtitle', 'Parlons de votre projet');
+  const description = useAutoTranslatedText('contact.description', 
+    'Je suis toujours ouvert à discuter de nouvelles opportunités et collaborations. N\'hésitez pas à me contacter pour échanger sur vos besoins en développement.'
+  );
+  const emailLabel = useAutoTranslatedText('contact.email_label', 'Email');
+  const phoneLabel = useAutoTranslatedText('contact.phone_label', 'Téléphone');
+  const locationLabel = useAutoTranslatedText('contact.location_label', 'Localisation');
+  const nameLabel = useAutoTranslatedText('contact.name_label', 'Nom');
+  const emailInputLabel = useAutoTranslatedText('contact.email_input_label', 'Email');
+  const messageLabel = useAutoTranslatedText('contact.message_label', 'Message');
+  const namePlaceholder = useAutoTranslatedText('contact.name_placeholder', 'Votre nom complet');
+  const emailPlaceholder = useAutoTranslatedText('contact.email_placeholder', 'votre@email.com');
+  const messagePlaceholder = useAutoTranslatedText('contact.message_placeholder', 
+    'Décrivez votre projet, vos besoins ou posez-moi vos questions...'
+  );
+  const sendButton = useAutoTranslatedText('contact.send_button', 'Envoyer le message');
+  const sendingText = useAutoTranslatedText('contact.sending_text', 'Envoi en cours...');
+  const successTitle = useAutoTranslatedText('contact.success_title', 'Message envoyé avec succès !');
+  const successMessage = useAutoTranslatedText('contact.success_message', 'Je vous répondrai dans les plus brefs délais.');
+  const errorTitle = useAutoTranslatedText('contact.error_title', 'Erreur lors de l\'envoi');
+  const errorMessage = useAutoTranslatedText('contact.error_message', 
+    'Veuillez réessayer ou me contacter directement par email.'
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -66,14 +93,13 @@ const Contact: React.FC = () => {
   return (
     <section id="contact" className="py-20 bg-white">
       <div className="container mx-auto px-6">
-        <h2 className="text-4xl font-bold text-center text-gray-900 mb-12">Contact</h2>
+        <h2 className="text-4xl font-bold text-center text-gray-900 mb-12">{title}</h2>
         
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12">
           <div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-6">Parlons de votre projet</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-6">{subtitle}</h3>
             <p className="text-gray-600 mb-6">
-              Je suis toujours ouvert à discuter de nouvelles opportunités et collaborations. 
-              N'hésitez pas à me contacter pour échanger sur vos besoins en développement.
+              {description}
             </p>
             
             <div className="space-y-4">
@@ -82,7 +108,7 @@ const Contact: React.FC = () => {
                   <span className="text-primary">📧</span>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Email</p>
+                  <p className="font-medium text-gray-900">{emailLabel}</p>
                   <p className="text-gray-600">claudio.raharison@gmail.com</p>
                 </div>
               </div>
@@ -92,7 +118,7 @@ const Contact: React.FC = () => {
                   <span className="text-primary">📱</span>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Téléphone</p>
+                  <p className="font-medium text-gray-900">{phoneLabel}</p>
                   <p className="text-gray-600">+261 34 41 078 69 / +261 37 68 590 47</p>
                 </div>
               </div>
@@ -102,7 +128,7 @@ const Contact: React.FC = () => {
                   <span className="text-primary">📍</span>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Localisation</p>
+                  <p className="font-medium text-gray-900">{locationLabel}</p>
                   <p className="text-gray-600">Antananarivo, Madagascar</p>
                 </div>
               </div>
@@ -112,7 +138,7 @@ const Contact: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Nom
+                {nameLabel}
               </label>
               <input
                 type="text"
@@ -123,13 +149,13 @@ const Contact: React.FC = () => {
                 required
                 disabled={isLoading}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 transition duration-200"
-                placeholder="Votre nom complet"
+                placeholder={namePlaceholder}
               />
             </div>
             
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email
+                {emailInputLabel}
               </label>
               <input
                 type="email"
@@ -140,13 +166,13 @@ const Contact: React.FC = () => {
                 required
                 disabled={isLoading}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 transition duration-200"
-                placeholder="votre@email.com"
+                placeholder={emailPlaceholder}
               />
             </div>
             
             <div>
               <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                Message
+                {messageLabel}
               </label>
               <textarea
                 id="message"
@@ -157,7 +183,7 @@ const Contact: React.FC = () => {
                 disabled={isLoading}
                 rows={5}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 transition duration-200 resize-vertical"
-                placeholder="Décrivez votre projet, vos besoins ou posez-moi vos questions..."
+                placeholder={messagePlaceholder}
               />
             </div>
 
@@ -167,8 +193,8 @@ const Contact: React.FC = () => {
                 <div className="flex items-center">
                   <span className="text-lg mr-3">✅</span>
                   <div>
-                    <p className="font-medium">Message envoyé avec succès !</p>
-                    <p className="text-sm mt-1">Je vous répondrai dans les plus brefs délais.</p>
+                    <p className="font-medium">{successTitle}</p>
+                    <p className="text-sm mt-1">{successMessage}</p>
                   </div>
                 </div>
               </div>
@@ -179,8 +205,8 @@ const Contact: React.FC = () => {
                 <div className="flex items-center">
                   <span className="text-lg mr-3">❌</span>
                   <div>
-                    <p className="font-medium">Erreur lors de l'envoi</p>
-                    <p className="text-sm mt-1">Veuillez réessayer ou me contacter directement par email.</p>
+                    <p className="font-medium">{errorTitle}</p>
+                    <p className="text-sm mt-1">{errorMessage}</p>
                   </div>
                 </div>
               </div>
@@ -197,12 +223,12 @@ const Contact: React.FC = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Envoi en cours...
+                  {sendingText}
                 </>
               ) : (
                 <>
                   <span className="mr-2">📨</span>
-                  Envoyer le message
+                  {sendButton}
                 </>
               )}
             </button>

@@ -5,8 +5,6 @@ import mada from '../assets/drapeau-madagascar.jpg';
 import france from '../assets/3178055-drapeau-francais-de-france-photo.jpg';
 import usa from '../assets/8093518-usa-american-flag-set-background-grunge-old-american-flag-vintage-gratuit-photo.jpg';
 import germany from '../assets/flag-wave-250.png';
-
-// Import des icônes depuis React Icons
 import { 
   SiHtml5, SiCss3, SiJavascript, SiReact, SiTypescript,
   SiTailwindcss, SiBootstrap, SiSass, SiNodedotjs,
@@ -23,6 +21,7 @@ import {
 import { 
   VscVscode 
 } from 'react-icons/vsc';
+import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
 
 interface SkillCategories {
   frontend: Skill[];
@@ -31,9 +30,7 @@ interface SkillCategories {
   autres: Skill[];
 }
 
-// Mapping des icônes pour chaque compétence
 const skillIcons: { [key: string]: React.ComponentType<any> } = {
-  // Frontend
   "HTML5": SiHtml5,
   "CSS3": SiCss3,
   "JavaScript": SiJavascript,
@@ -42,8 +39,6 @@ const skillIcons: { [key: string]: React.ComponentType<any> } = {
   "Tailwind CSS": SiTailwindcss,
   "Bootstrap": SiBootstrap,
   "SASS": SiSass,
-  
-  // Backend
   "Node.js": SiNodedotjs,
   "Express.js": SiExpress,
   "NestJS": SiNestjs,
@@ -51,14 +46,10 @@ const skillIcons: { [key: string]: React.ComponentType<any> } = {
   "MySQL": SiMysql,
   "PostgreSQL": SiPostgresql,
   "Redis": SiRedis,
-  
-  // Outils & Technologies
   "Git": SiGit,
   "Visual Studio Code": VscVscode,
   "Figma": SiFigma,
   "Postman": SiPostman,
-  
-  // Compétences supplémentaires
   "Python": SiPython,
   "SQL": TbSql,
   "QGIS": TbMap,
@@ -69,14 +60,33 @@ const skillIcons: { [key: string]: React.ComponentType<any> } = {
   "Adobe Illustrator": SiAdobeillustrator,
   "R": SiR,
   "Microsoft Office": FaMicrosoft,
-  
-  // Icônes par défaut pour celles non disponibles
   "SGeMS": FaTools,
   "ODK Collect": FaDatabase,
   "PSPP": FaMicrosoft,
 };
 
 const Skills: React.FC = () => {
+  const title = useAutoTranslatedText('skills.title', 'Compétences');
+  const subtitle = useAutoTranslatedText('skills.subtitle', 
+    'Un panorama complet de mes compétences techniques acquises au fil de mes expériences professionnelles et formations'
+  );
+  const webDevTitle = useAutoTranslatedText('skills.web_dev_title', 'Développement Web');
+  const frontendTitle = useAutoTranslatedText('skills.frontend_title', 'Frontend');
+  const backendTitle = useAutoTranslatedText('skills.backend_title', 'Backend');
+  const toolsTitle = useAutoTranslatedText('skills.tools_title', 'Outils & Environnements');
+  const devToolsTitle = useAutoTranslatedText('skills.dev_tools_title', 'Outils de Développement');
+  const otherSkillsTitle = useAutoTranslatedText('skills.other_skills_title', 'Compétences Techniques Diverses');
+  const languagesTitle = useAutoTranslatedText('skills.languages_title', 'Compétences Linguistiques');
+  const malagasy = useAutoTranslatedText('skills.lang.malagasy', 'Malagasy');
+  const french = useAutoTranslatedText('skills.lang.french', 'Français');
+  const english = useAutoTranslatedText('skills.lang.english', 'Anglais');
+  const german = useAutoTranslatedText('skills.lang.german', 'Allemand');
+  const native = useAutoTranslatedText('skills.lang.native', 'Langue maternelle');
+  const b2 = useAutoTranslatedText('skills.lang.b2', 'Niveau B2');
+  const intermediate = useAutoTranslatedText('skills.lang.intermediate', 'Intermédiaire');
+  const beginner = useAutoTranslatedText('skills.lang.beginner', 'Débutant');
+  const flagAlt = useAutoTranslatedText('skills.flag_alt', 'Drapeau');
+
   const skillCategories: SkillCategories = {
     frontend: skills.filter((skill: Skill) => skill.category === 'frontend'),
     backend: skills.filter((skill: Skill) => skill.category === 'backend'),
@@ -117,31 +127,28 @@ const Skills: React.FC = () => {
     <section id="skills" className="py-20 bg-gradient-to-br from-gray-50 to-white">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold text-gray-900 mb-4">Compétences</h2>
+          <h2 className="text-5xl font-bold text-gray-900 mb-4">{title}</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Un panorama complet de mes compétences techniques acquises au fil de mes expériences professionnelles et formations
+            {subtitle}
           </p>
         </div>
         
         <div className="max-w-6xl mx-auto">
-          {/* Développement Web */}
           <div className="mb-12">
-            <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">Développement Web</h3>
+            <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">{webDevTitle}</h3>
             <div className="space-y-8">
-              <SkillCategory title="Frontend" skills={skillCategories.frontend} color="primary" />
-              <SkillCategory title="Backend" skills={skillCategories.backend} color="secondary" />
+              <SkillCategory title={frontendTitle} skills={skillCategories.frontend} color="primary" />
+              <SkillCategory title={backendTitle} skills={skillCategories.backend} color="secondary" />
             </div>
           </div>
 
-          {/* Outils & Technologies */}
           <div className="mb-12">
-            <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">Outils & Environnements</h3>
-            <SkillCategory title="Outils de Développement" skills={skillCategories.tools} color="green-600" />
+            <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">{toolsTitle}</h3>
+            <SkillCategory title={devToolsTitle} skills={skillCategories.tools} color="green-600" />
           </div>
 
-          {/* Compétences Diverses */}
           <div className="mb-12">
-            <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">Compétences Techniques Diverses</h3>
+            <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">{otherSkillsTitle}</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {skillCategories.autres.map((skill: Skill, index: number) => {
                 const IconComponent = skillIcons[skill.name] || FaQuestionCircle;
@@ -156,29 +163,28 @@ const Skills: React.FC = () => {
           </div>
         </div>
 
-        {/* Section Langues - Inchangée */}
         <div className="mt-16 bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-          <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">Compétences Linguistiques</h3>
+          <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">{languagesTitle}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
             {[
               { 
-                language: 'Malagasy', 
-                level: 'Langue maternelle', 
+                language: malagasy, 
+                level: native, 
                 flag: mada 
               },
               { 
-                language: 'Français', 
-                level: 'Niveau B2', 
+                language: french, 
+                level: b2, 
                 flag: france
               },
               { 
-                language: 'Anglais', 
-                level: 'Intermédiaire', 
+                language: english, 
+                level: intermediate, 
                 flag: usa 
               },
               { 
-                language: 'Allemand', 
-                level: 'Débutant', 
+                language: german, 
+                level: beginner, 
                 flag: germany
               }
             ].map((lang, index: number) => (
@@ -187,7 +193,7 @@ const Skills: React.FC = () => {
                   <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                     <img 
                       src={lang.flag} 
-                      alt={`Drapeau ${lang.language}`}
+                      alt={`${flagAlt} ${lang.language}`}
                       className="w-full h-full object-cover"
                     />
                   </div>
