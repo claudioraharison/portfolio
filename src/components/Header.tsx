@@ -144,7 +144,7 @@ const Header: React.FC = () => {
   const languages = [
     { code: 'fr' as const, name: 'Français', flag: '🇫🇷' },
     { code: 'en' as const, name: 'English', flag: '🇺🇸' },
-    { code: 'mg' as const, name: 'Malagasy', flag: '🇲🇬' }
+    // { code: 'mg' as const, name: 'Malagasy', flag: '🇲🇬' }
   ];
 
   const handleNavClick = (href: string, event: React.MouseEvent) => {
