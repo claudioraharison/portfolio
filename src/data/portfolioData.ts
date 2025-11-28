@@ -3,15 +3,17 @@ import type { Project, Skill, Experience } from '../types';
 export const projects: Project[] = [
   {
     id: 1,
-    title: "Plateforme Rapex Group",
+    title: "Plateforme MasterTable",
+    client: "Rapex Group",
     description: "Développement d'une plateforme web complète avec interface interactive et réactive.",
-    technologies: ["React", "TypeScript", "Tailwind CSS", "NestJS", "PostgreSQL"],
+    technologies: ["React", "TypeScript", "Tailwind CSS", "NestJS", "PostgreSQL", "Redis", "JavaScript", "Paypal", "Stripe"],
     githubUrl: "#",
-    liveUrl: "#",
+    liveUrl: "https://mastertable.site",
   },
   {
     id: 2,
     title: "Application de Gestion",
+    client: "Freelance",
     description: "Application web pour la gestion de données avec interface utilisateur intuitive.",
     technologies: ["React", "Node.js", "Express", "MongoDB"],
     githubUrl: "#",
@@ -20,6 +22,7 @@ export const projects: Project[] = [
   {
     id: 3,
     title: "Site E-commerce",
+    client: "Projet Personnel",
     description: "Plateforme e-commerce avec panier d'achat et système de paiement.",
     technologies: ["Next.js", "TypeScript", "Stripe", "paypal", "Tailwind CSS"],
     githubUrl: "#",

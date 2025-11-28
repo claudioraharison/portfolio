@@ -1,6 +1,7 @@
 export interface Project {
   id: number;
   title: string;
+  client?: string;
   description: string;
   technologies: string[];
   githubUrl?: string;
