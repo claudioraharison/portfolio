@@ -98,9 +98,9 @@ const Skills: React.FC = () => {
     const IconComponent = skillIcons[name] || FaQuestionCircle;
     
     return (
-      <div className="bg-white border-2 border-primary/20 rounded-xl px-6 py-4 text-center hover:bg-primary hover:text-white transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-default flex flex-col items-center justify-center">
-        <IconComponent className="w-8 h-8 mb-2 text-gray-700 hover:text-white transition-colors" />
-        <span className="font-semibold text-gray-900 hover:text-white transition-colors">{name}</span>
+      <div className="bg-white border-2 border-primary/20 rounded-xl px-6 py-4 text-center hover:bg-primary/15 hover:text-white transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-default flex flex-col items-center justify-center">
+        <IconComponent className="w-8 h-8 mb-2 text-gray-700 hover:text-gray-800 transition-colors" />
+        <span className="font-semibold text-gray-900 hover:text-gray-700 transition-colors">{name}</span>
       </div>
     );
   };
@@ -153,7 +153,7 @@ const Skills: React.FC = () => {
               {skillCategories.autres.map((skill: Skill, index: number) => {
                 const IconComponent = skillIcons[skill.name] || FaQuestionCircle;
                 return (
-                  <div key={index} className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 text-center hover:bg-gray-200 transition-colors cursor-default flex flex-col items-center justify-center">
+                  <div key={index} className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 text-center hover:bg-gray-200 transition-all duration-300 hover:scale-105 cursor-default flex flex-col items-center justify-center">
                     <IconComponent className="w-8 h-8 mb-2 text-gray-700" />
                     <span className="font-medium text-gray-800">{skill.name}</span>
                   </div>
