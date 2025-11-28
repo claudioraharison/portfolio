@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
+import { CheckCircle, Mail, MapPin, Smartphone, XCircle } from 'lucide-react';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -60,7 +61,7 @@ const Contact: React.FC = () => {
       formDataToSend.append('name', formData.name.trim());
       formDataToSend.append('email', formData.email.trim());
       formDataToSend.append('message', formData.message.trim());
-      formDataToSend.append('_subject', `🎯 Portfolio - Message de ${formData.name}`);
+      formDataToSend.append('_subject', `📨 Portfolio - Message de ${formData.name}`);
       formDataToSend.append('_replyto', formData.email);
       formDataToSend.append('_template', 'table');
       formDataToSend.append('_captcha', 'false');
@@ -105,7 +106,8 @@ const Contact: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-primary">📧</span>
+                  {/* <span className="text-primary">📧</span> */}
+                  <Mail className="text-primary w-6 h-6" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{emailLabel}</p>
@@ -115,7 +117,8 @@ const Contact: React.FC = () => {
               
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-primary">📱</span>
+                  {/* <span className="text-primary">📱</span> */}
+                  <Smartphone className="text-primary w-6 h-6" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{phoneLabel}</p>
@@ -125,7 +128,8 @@ const Contact: React.FC = () => {
               
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-primary">📍</span>
+                  {/* <span className="text-primary">📍</span> */}
+                  <MapPin className="text-primary w-6 h-6" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{locationLabel}</p>
@@ -191,7 +195,8 @@ const Contact: React.FC = () => {
             {submitStatus === 'success' && (
               <div className="p-4 bg-green-50 text-green-800 rounded-lg border border-green-200 animate-fadeIn">
                 <div className="flex items-center">
-                  <span className="text-lg mr-3">✅</span>
+                  {/* <span className="text-lg mr-3">✅</span> */}
+                  <CheckCircle className="w-6 h-6 mr-3 text-green-500" />
                   <div>
                     <p className="font-medium">{successTitle}</p>
                     <p className="text-sm mt-1">{successMessage}</p>
@@ -203,7 +208,8 @@ const Contact: React.FC = () => {
             {submitStatus === 'error' && (
               <div className="p-4 bg-red-50 text-red-800 rounded-lg border border-red-200 animate-fadeIn">
                 <div className="flex items-center">
-                  <span className="text-lg mr-3">❌</span>
+                  {/* <span className="text-lg mr-3">❌</span> */}
+                  <XCircle className="w-6 h-6 mr-3 text-red-600" />
                   <div>
                     <p className="font-medium">{errorTitle}</p>
                     <p className="text-sm mt-1">{errorMessage}</p>
@@ -227,7 +233,8 @@ const Contact: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <span className="mr-2">📨</span>
+                  {/* <span className="mr-2">📨</span> */}
+                  <Mail className="w-5 h-5 mr-2 text-current" />
                   {sendButton}
                 </>
               )}

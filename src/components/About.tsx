@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
+import { BarChart, CheckCircle, Code, Mail, Map, MapPin, Smartphone, Star } from 'lucide-react';
 
 const About: React.FC = () => {
   const title = useAutoTranslatedText('about.title', 'A propos');
@@ -70,7 +71,8 @@ const About: React.FC = () => {
                 <div className="space-y-4 flex-1">
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[60px]">
                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-primary text-lg">📍</span>
+                      {/* <span className="text-primary text-lg">📍</span> */}
+                      <MapPin className="text-primary w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{location}</span>
@@ -80,7 +82,8 @@ const About: React.FC = () => {
                   
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[60px]">
                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-primary text-lg">📧</span>
+                      {/* <span className="text-primary text-lg">📧</span> */}
+                      <Mail className="text-primary w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{email}</span>
@@ -90,7 +93,8 @@ const About: React.FC = () => {
                   
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[80px]">
                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-primary text-lg">📱</span>
+                      {/* <span className="text-primary text-lg">📱</span> */}
+                      <Smartphone className="text-primary w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{phone}</span>
@@ -103,7 +107,8 @@ const About: React.FC = () => {
                   
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[60px]">
                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-primary text-lg">✅</span>
+                      {/* <span className="text-primary text-lg">✅</span> */}
+                      <CheckCircle className="text-primary w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{availability}</span>
@@ -113,7 +118,8 @@ const About: React.FC = () => {
                   
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[60px]">
                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-primary text-lg">🎯</span>
+                      {/* <span className="text-primary text-lg">🎯</span> */}
+                      <Star className="text-primary w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{specialties}</span>
@@ -129,7 +135,8 @@ const About: React.FC = () => {
           <div className="mt-16 grid md:grid-cols-3 gap-6">
             <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-sm hover:shadow-md transition h-full">
               <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-primary text-2xl">💻</span>
+                {/* <span className="text-primary text-2xl">💻</span> */}
+                <Code className="text-primary w-7 h-7"/>
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">{devTitle}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -139,7 +146,8 @@ const About: React.FC = () => {
             
             <div className="text-center p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl shadow-sm hover:shadow-md transition h-full">
               <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-primary text-2xl">🗺️</span>
+                {/* <span className="text-primary text-2xl">🗺️</span> */}
+                <Map className="text-primary w-7 h-7" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">{geoTitle}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -149,7 +157,8 @@ const About: React.FC = () => {
             
             <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-sm hover:shadow-md transition h-full">
               <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-primary text-2xl">📊</span>
+                {/* <span className="text-primary text-2xl">📊</span> */}
+                <BarChart className="text-primary w-7 h-7" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">{dataTitle}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
