@@ -174,8 +174,8 @@ const Header: React.FC = () => {
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-gray-200/50' 
-        : 'bg-white/90 backdrop-blur-sm shadow-sm'
+        ? 'bg-white/45 backdrop-blur-lg shadow-lg border-b border-gray-200/50' 
+        : 'bg-white/40 backdrop-blur-sm shadow-sm'
     }`}>
       <nav className="container mx-auto px-4 sm:px-6 py-3">
         <div className="flex justify-between items-center">
@@ -199,8 +199,8 @@ const Header: React.FC = () => {
             </div>
             
             <div className="text-primary">
-              <div className="text-lg sm:text-xl font-bold leading-tight">Nirina Claudio</div>
-              <div className="text-sm sm:text-base font-semibold opacity-90">RAHARISON</div>
+              <div className="text-sm sm:text-base font-semibold opacity-90">Nirina Claudio</div>
+              <div className="text-lg sm:text-xl font-bold leading-tight">RAHARISON</div>
             </div>
           </div>
 

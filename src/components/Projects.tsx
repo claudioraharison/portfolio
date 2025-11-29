@@ -4,12 +4,12 @@ import { projects } from '../data/portfolioData';
 import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
 import ConstructionPreview from './ConstructionPreview'; 
 
-// Définition du type de props (Ajouté/Corrigé)
+// Définition du type de props
 interface ProjectsProps {
   onViewAllClick: () => void; // Le composant accepte maintenant cette fonction
 }
 
-const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => { // Utilisation du type de props
+const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
   const title = useAutoTranslatedText('projects.title', 'Mes Projets');
   const codeText = useAutoTranslatedText('projects.code', 'Code');
   const viewProjectText = useAutoTranslatedText('projects.view_project', 'Voir le projet');
@@ -26,8 +26,20 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => { // Utilisati
     autoplay: true,
     autoplaySpeed: 4000,
     responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 1, } },
-      { breakpoint: 600, settings: { slidesToShow: 1, slidesToScroll: 1 } }
+      { 
+        breakpoint: 1024, 
+        settings: { 
+          slidesToShow: 2, 
+          slidesToScroll: 1, 
+        } 
+      },
+      { 
+        breakpoint: 600, 
+        settings: { 
+          slidesToShow: 1, 
+          slidesToScroll: 1 
+        } 
+      }
     ]
   };
 
@@ -73,7 +85,8 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => { // Utilisati
               const scaleFactor = 0.28; 
 
               return (
-                // Chaque élément de la liste doit être enveloppé dans une div pour le slider
+                // Chaque élément de la liste doit être enveloppé dans une div pour le slider.
+                // Le 'px-3' ajoute l'espacement entre les cartes.
                 <div key={project.id} className="px-3"> 
                     <div 
                       className="bg-white rounded-xl shadow-lg overflow-hidden group flex flex-col h-full border border-gray-100" 
