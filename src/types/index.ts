@@ -3,6 +3,7 @@ export interface Project {
   title: string;
   client?: string;
   description: string;
+  category: string;
   technologies: string[];
   githubUrl?: string;
   liveUrl?: string;

@@ -6,6 +6,7 @@ export const projects: Project[] = [
     title: "Plateforme MasterTable",
     client: "Rapex Group",
     description: "Développement d'une plateforme web complète avec interface interactive et réactive.",
+    category: "Web & Backend",
     technologies: ["React", "TypeScript", "Tailwind CSS", "NestJS", "PostgreSQL", "Redis", "JavaScript", "Paypal", "Stripe"],
     githubUrl: "#",
     liveUrl: "https://mastertable.site",
@@ -15,6 +16,7 @@ export const projects: Project[] = [
     title: "Application de Gestion",
     client: "Freelance",
     description: "Application web pour la gestion de données avec interface utilisateur intuitive.",
+    category: "Web & Frontend",
     technologies: ["React", "Node.js", "Express", "MongoDB"],
     githubUrl: "#",
     liveUrl: "#",
@@ -24,10 +26,21 @@ export const projects: Project[] = [
     title: "Site E-commerce",
     client: "Projet Personnel",
     description: "Plateforme e-commerce avec panier d'achat et système de paiement.",
+    category: "Web & Fullstack",
     technologies: ["Next.js", "TypeScript", "Stripe", "paypal", "Tailwind CSS"],
     githubUrl: "#",
     liveUrl: "#",
-  }
+  },
+  // {
+  //   id: 4,
+  //   title: "Analyse Spatiale des Données",
+  //   client: "Université X",
+  //   description: "Projet de modélisation cartographique des tendances démographiques régionales.",
+  //   category: "Cartographie & SIG",
+  //   technologies: ["QGIS", "ArcGIS", "Python", "R"],
+  //   githubUrl: "#",
+  //   liveUrl: "#",
+  // }
 ];
 
 export const skills: Skill[] = [
