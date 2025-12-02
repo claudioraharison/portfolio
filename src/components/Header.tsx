@@ -12,9 +12,14 @@ import {
   Globe
 } from 'lucide-react';
 import { useAutoTranslation } from '../contexts/AutoTranslationContext';
-import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText'; // Ajoutez cette importation
+import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
 
-const Header: React.FC = () => {
+// Définition du type de props avec hideMenu optionnel
+interface HeaderProps {
+  hideMenu?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -47,27 +52,32 @@ const Header: React.FC = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
       
-      const sections = ['home', 'about', 'skills', 'projects', 'experience', 'contact'];
-      const currentSection = sections.find(section => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          return rect.top <= 100 && rect.bottom >= 100;
+      // Ne mettre à jour la section active que si le menu n'est pas caché
+      if (!hideMenu) {
+        const sections = ['home', 'about', 'skills', 'projects', 'experience', 'contact'];
+        const currentSection = sections.find(section => {
+          const element = document.getElementById(section);
+          if (element) {
+            const rect = element.getBoundingClientRect();
+            return rect.top <= 100 && rect.bottom >= 100;
+          }
+          return false;
+        });
+        
+        if (currentSection) {
+          setActiveSection(currentSection);
         }
-        return false;
-      });
-      
-      if (currentSection) {
-        setActiveSection(currentSection);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [hideMenu]);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    if (!hideMenu) {
+      setIsMenuOpen(!isMenuOpen);
+    }
   };
 
   const closeMenu = () => {
@@ -148,18 +158,20 @@ const Header: React.FC = () => {
   ];
 
   const handleNavClick = (href: string, event: React.MouseEvent) => {
-    event.preventDefault();
-    closeMenu();
-    
-    const targetId = href.replace('#', '');
-    const targetElement = document.getElementById(targetId);
-    
-    if (targetElement) {
-      const offsetTop = targetElement.offsetTop - 80;
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth'
-      });
+    if (!hideMenu) {
+      event.preventDefault();
+      closeMenu();
+      
+      const targetId = href.replace('#', '');
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement) {
+        const offsetTop = targetElement.offsetTop - 80;
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth'
+        });
+      }
     }
   };
 
@@ -204,7 +216,8 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {displayMode === 'desktop-full' && (
+          {/* Condition pour afficher le menu seulement si hideMenu est false */}
+          {!hideMenu && displayMode === 'desktop-full' && (
             <div className="hidden lg:flex items-center space-x-1">
               {navLinks.map((link) => {
                 const IconComponent = link.icon;
@@ -233,7 +246,8 @@ const Header: React.FC = () => {
             </div>
           )}
 
-          {displayMode === 'desktop-icons' && (
+          {/* Condition pour afficher le menu seulement si hideMenu est false */}
+          {!hideMenu && displayMode === 'desktop-icons' && (
             <div className="hidden md:flex lg:hidden items-center space-x-1">
               {navLinks.map((link) => {
                 const IconComponent = link.icon;
@@ -266,6 +280,7 @@ const Header: React.FC = () => {
             </div>
           )}
 
+          {/* Le sélecteur de langue reste toujours visible */}
           {displayMode === 'desktop-full' && (
             <div className="hidden lg:block relative" ref={languageRef}>
               <button 
@@ -342,6 +357,7 @@ const Header: React.FC = () => {
             </div>
           )}
 
+          {/* Pour mobile */}
           {displayMode === 'mobile' && (
             <div className="flex items-center space-x-2">
               <div className="md:hidden relative" ref={languageRef}>
@@ -375,20 +391,24 @@ const Header: React.FC = () => {
                 )}
               </div>
 
-              <button 
-                ref={buttonRef}
-                className="md:hidden p-2 text-gray-600 hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100/50"
-                onClick={toggleMenu}
-                aria-label="Toggle menu"
-                aria-expanded={isMenuOpen}
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
+              {/* Bouton menu mobile - caché si hideMenu est true */}
+              {!hideMenu && (
+                <button 
+                  ref={buttonRef}
+                  className="md:hidden p-2 text-gray-600 hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100/50"
+                  onClick={toggleMenu}
+                  aria-label="Toggle menu"
+                  aria-expanded={isMenuOpen}
+                >
+                  {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+              )}
             </div>
           )}
         </div>
 
-        {displayMode === 'mobile' && (
+        {/* Menu mobile - caché si hideMenu est true */}
+        {!hideMenu && displayMode === 'mobile' && (
           <>
             <div 
               ref={menuRef}

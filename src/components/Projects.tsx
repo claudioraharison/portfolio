@@ -1,5 +1,4 @@
 import React from 'react';
-import Slider from 'react-slick'; // Composant Carrousel
 import { projects } from '../data/portfolioData';
 import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
 import ConstructionPreview from './ConstructionPreview'; 
@@ -15,33 +14,8 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
   const viewProjectText = useAutoTranslatedText('projects.view_project', 'Voir le projet');
   const viewAllText = useAutoTranslatedText('projects.view_all', 'Voir tous les projets');
 
-  // --- Configuration du Slider (Slick Settings) ---
-  const sliderSettings = {
-    dots: true,
-    infinite: projects.length > 3,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    arrows: true,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    responsive: [
-      { 
-        breakpoint: 1024, 
-        settings: { 
-          slidesToShow: 2, 
-          slidesToScroll: 1, 
-        } 
-      },
-      { 
-        breakpoint: 600, 
-        settings: { 
-          slidesToShow: 1, 
-          slidesToScroll: 1 
-        } 
-      }
-    ]
-  };
+  // N'afficher que les 3 premiers projets
+  const displayedProjects = projects.slice(0, 3);
 
   // Logique Conditionnelle pour le bouton : il doit y avoir plus de 3 projets
   const shouldShowViewAllButton = projects.length > 3;
@@ -51,135 +25,130 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
     event.preventDefault(); 
     onViewAllClick(); // <-- Utilisation de la prop
   };
-  
 
   return (
     <section id="projects" className="py-20 bg-gray-50">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl font-bold text-center text-gray-900 mb-12">{title}</h2>
         
-        {/* Conteneur pour le Slider */}
-        <div className="slick-carousel-container"> 
-          <Slider {...sliderSettings}>
-            {projects.map((project) => {
-              const projectId = project.id.toString();
-              
-              const translatedTitle = useAutoTranslatedText(
-                `projects.${projectId}.title`,
-                project.title
-              );
-              
-              const translatedDescription = useAutoTranslatedText(
-                `projects.${projectId}.description`,
-                project.description
-              );
+        {/* Grille de projets à la place du slider */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayedProjects.map((project) => {
+            const projectId = project.id.toString();
+            
+            const translatedTitle = useAutoTranslatedText(
+              `projects.${projectId}.title`,
+              project.title
+            );
+            
+            const translatedDescription = useAutoTranslatedText(
+              `projects.${projectId}.description`,
+              project.description
+            );
 
-              // Logique du badge Client/Statut
-              const projectSource = project.client || 'Inconnu'; 
-              const isPersonal = projectSource === 'Projet Personnel' || projectSource === 'Freelance';
-              const badgeBg = isPersonal ? 'bg-blue-100' : 'bg-green-100';
-              const badgeText = isPersonal ? 'text-blue-700' : 'text-green-700';
-              
-              // Logique de validation du lien Live et facteur d'échelle pour l'aperçu
-              const isLiveUrlValid = project.liveUrl && project.liveUrl !== '#';
-              const scaleFactor = 0.28; 
+            // Logique du badge Client/Statut
+            const projectSource = project.client || 'Inconnu'; 
+            const isPersonal = projectSource === 'Projet Personnel' || projectSource === 'Freelance';
+            const badgeBg = isPersonal ? 'bg-blue-100' : 'bg-green-100';
+            const badgeText = isPersonal ? 'text-blue-700' : 'text-green-700';
+            
+            // Logique de validation du lien Live et facteur d'échelle pour l'aperçu
+            const isLiveUrlValid = project.liveUrl && project.liveUrl !== '#';
+            const scaleFactor = 0.28; 
 
-              return (
-                // Chaque élément de la liste doit être enveloppé dans une div pour le slider.
-                // Le 'px-3' ajoute l'espacement entre les cartes.
-                <div key={project.id} className="px-3"> 
-                    <div 
-                      className="bg-white rounded-xl shadow-lg overflow-hidden group flex flex-col h-full border border-gray-100" 
-                    >
-                      {/* --- APERÇU LIVE OU EN CONSTRUCTION (IFRAME) --- */}
-                      <div className="relative w-full aspect-video overflow-hidden border-b border-gray-200 block">
-                        
-                        {isLiveUrlValid ? (
-                          <a 
-                            href={project.liveUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block transition duration-300 hover:opacity-80"
-                          >
-                            <div 
-                              className="absolute top-1/2 left-1/2 w-[1280px] h-[720px]" 
-                              style={{ 
-                                  transform: `translate(-50%, -50%) scale(${scaleFactor})`,
-                              }}
-                            >
-                              <iframe 
-                                src={project.liveUrl} 
-                                title={`Aperçu de ${project.title}`}
-                                width="100%" 
-                                height="100%" 
-                                scrolling="no" 
-                                frameBorder="0"
-                                className="pointer-events-none" 
-                              />
-                            </div>
-                          </a>
-                        ) : (
-                          // Affichage du composant "En construction"
-                          <ConstructionPreview title={translatedTitle} />
-                        )}
-                      </div>
-                      
-                      {/* --- CONTENU DU PROJET --- */}
-                      <div className="p-6 flex flex-col flex-grow">
-                        
-                        <div className="flex items-center mb-3">
-                          <h3 className="text-xl font-semibold text-gray-900 mr-2">{translatedTitle}</h3>
-                          {/* Badge Client/Statut */}
-                          <span 
-                            className={`${badgeBg} ${badgeText} text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0`}
-                          >
-                            {projectSource}
-                          </span>
+            return (
+              <div key={project.id} className="h-full">
+                <div 
+                  className="bg-white rounded-xl shadow-lg overflow-hidden group flex flex-col h-full border border-gray-100 hover:shadow-xl transition-shadow duration-300"
+                >
+                  {/* --- APERÇU LIVE OU EN CONSTRUCTION (IFRAME) --- */}
+                  <div className="relative w-full aspect-video overflow-hidden border-b border-gray-200 block">
+                    
+                    {isLiveUrlValid ? (
+                      <a 
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block transition duration-300 hover:opacity-80"
+                      >
+                        <div 
+                          className="absolute top-1/2 left-1/2 w-[1280px] h-[720px]" 
+                          style={{ 
+                              transform: `translate(-50%, -50%) scale(${scaleFactor})`,
+                          }}
+                        >
+                          <iframe 
+                            src={project.liveUrl} 
+                            title={`Aperçu de ${project.title}`}
+                            width="100%" 
+                            height="100%" 
+                            scrolling="no" 
+                            frameBorder="0"
+                            className="pointer-events-none" 
+                          />
                         </div>
-                        
-                        <p className="text-gray-600 mb-4">{translatedDescription}</p>
-                        
-                        {/* Technologies (alignées vers le bas) */}
-                        <div className="flex flex-wrap gap-2 mb-4 mt-auto">
-                          {project.technologies.map((tech, index) => (
-                            <span 
-                              key={index}
-                              className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                        
-                        {/* Liens GitHub et Live */}
-                        <div className="flex space-x-4">
-                          {project.githubUrl && project.githubUrl !== '#' && (
-                            <a 
-                              href={project.githubUrl}
-                              className="text-gray-600 hover:text-primary transition"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {codeText}
-                            </a>
-                          )}
-                          {isLiveUrlValid && (
-                            <a 
-                              href={project.liveUrl}
-                              className="text-primary hover:text-secondary transition font-semibold"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {viewProjectText}
-                            </a>
-                          )}
-                        </div>
-                      </div>
+                      </a>
+                    ) : (
+                      // Affichage du composant "En construction"
+                      <ConstructionPreview title={translatedTitle} />
+                    )}
+                  </div>
+                  
+                  {/* --- CONTENU DU PROJET --- */}
+                  <div className="p-6 flex flex-col flex-grow">
+                    
+                    <div className="flex items-center mb-3">
+                      <h3 className="text-xl font-semibold text-gray-900 mr-2">{translatedTitle}</h3>
+                      {/* Badge Client/Statut */}
+                      <span 
+                        className={`${badgeBg} ${badgeText} text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0`}
+                      >
+                        {projectSource}
+                      </span>
                     </div>
+                    
+                    <p className="text-gray-600 mb-4">{translatedDescription}</p>
+                    
+                    {/* Technologies (alignées vers le bas) */}
+                    <div className="flex flex-wrap gap-2 mb-4 mt-auto">
+                      {project.technologies.map((tech, index) => (
+                        <span 
+                          key={index}
+                          className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    {/* Liens GitHub et Live */}
+                    <div className="flex space-x-4">
+                      {project.githubUrl && project.githubUrl !== '#' && (
+                        <a 
+                          href={project.githubUrl}
+                          className="text-gray-600 hover:text-primary transition"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {codeText}
+                        </a>
+                      )}
+                      {isLiveUrlValid && (
+                        <a 
+                          href={project.liveUrl}
+                          className="text-primary hover:text-secondary transition font-semibold"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {viewProjectText}
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              );
-            })}
-          </Slider>
+              </div>
+            );
+          })}
         </div>
 
         {/* --- BOUTON VOIR TOUS LES PROJETS (Conditionnel) --- */}

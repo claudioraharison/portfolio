@@ -13,8 +13,8 @@ import Contact from './components/Contact';
 
 // Styles et bibliothèques externes
 import './index.css';
-import "slick-carousel/slick/slick.css"; 
-import "slick-carousel/slick/slick-theme.css";
+// import "slick-carousel/slick/slick.css"; 
+// import "slick-carousel/slick/slick-theme.css";
 
 const App: React.FC = () => {
   const [isAllProjectsView, setIsAllProjectsView] = useState(false);
@@ -61,7 +61,8 @@ const App: React.FC = () => {
   return (
     <AutoTranslationProvider>
       <div className="App">
-        <Header />
+        {/* Passez la prop hideMenu au Header */}
+        <Header hideMenu={isAllProjectsView} />
         {isAllProjectsView ? allProjectsContent : homeContent}
       </div>
     </AutoTranslationProvider>
