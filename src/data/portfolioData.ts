@@ -53,6 +53,7 @@ export const skills: Skill[] = [
   { name: "Tailwind CSS", category: "frontend", description: "Framework CSS utility-first pour un développement rapide de designs personnalisés et responsive sans quitter le HTML." },
   { name: "Bootstrap", category: "frontend", description: "Framework CSS pour développer rapidement des sites web responsifs avec des composants prédéfinis et un système de grille." },
   { name: "SASS", category: "frontend", description: "Préprocesseur CSS avec variables, nesting, mixins et fonctions pour une organisation avancée des styles." },
+  { name: "Flutter", category: "frontend", description: "Framework de développement d'applications multiplateformes pour iOS, Android et web. Création d'interfaces natives avec le langage Dart, utilisation de widgets personnalisables et état géré avec Provider/Bloc." },
   
   // Backend
   { name: "Node.js", category: "backend", description: "Environnement d'exécution JavaScript côté serveur pour construire des applications web scalables et performantes." },

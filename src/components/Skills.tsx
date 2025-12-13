@@ -10,7 +10,8 @@ import {
   SiTailwindcss, SiBootstrap, SiSass, SiNodedotjs,
   SiExpress, SiNestjs, SiPhp, SiMysql, SiPostgresql,
   SiRedis, SiGit, SiFigma, SiPostman,
-  SiPython, SiAdobephotoshop, SiAdobeillustrator, SiR
+  SiPython, SiAdobephotoshop, SiAdobeillustrator, SiR,
+  SiFlutter
 } from 'react-icons/si';
 import { 
   TbSql, TbMap, TbBuildingSkyscraper
@@ -40,6 +41,7 @@ const skillIcons: { [key: string]: React.ComponentType<any> } = {
   "Tailwind CSS": SiTailwindcss,
   "Bootstrap": SiBootstrap,
   "SASS": SiSass,
+  "Flutter": SiFlutter,
   "Node.js": SiNodedotjs,
   "Express.js": SiExpress,
   "NestJS": SiNestjs,
