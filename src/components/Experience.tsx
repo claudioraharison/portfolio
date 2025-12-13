@@ -30,7 +30,7 @@ const Experience: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900">{translatedPosition}</h3>
-                    <p className="text-lg text-primary font-medium">{translatedCompany}</p>
+                    <p className="text-lg text-blue-900 font-medium">{translatedCompany}</p>
                   </div>
                   <span className="text-gray-500 bg-gray-100 px-3 py-1 rounded-full text-sm mt-2 md:mt-0">
                     {exp.period}
@@ -51,7 +51,7 @@ const Experience: React.FC = () => {
                   {exp.technologies.map((tech, index) => (
                     <span 
                       key={index}
-                      className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                      className="bg-blue-900/10 text-blue-900 px-3 py-1 rounded-full text-sm"
                     >
                       {tech}
                     </span>

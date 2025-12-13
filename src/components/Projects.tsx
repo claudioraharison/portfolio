@@ -50,7 +50,7 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
             const projectSource = project.client || 'Inconnu'; 
             const isPersonal = projectSource === 'Projet Personnel' || projectSource === 'Freelance';
             const badgeBg = isPersonal ? 'bg-blue-100' : 'bg-green-100';
-            const badgeText = isPersonal ? 'text-blue-700' : 'text-green-700';
+            const badgeText = isPersonal ? 'text-blue-900' : 'text-green-700';
             
             // Logique de validation du lien Live et facteur d'échelle pour l'aperçu
             const isLiveUrlValid = project.liveUrl && project.liveUrl !== '#';
@@ -114,7 +114,7 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
                       {project.technologies.map((tech, index) => (
                         <span 
                           key={index}
-                          className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                          className="bg-blue-900/10 text-blue-900 px-3 py-1 rounded-full text-sm"
                         >
                           {tech}
                         </span>
@@ -126,7 +126,7 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
                       {project.githubUrl && project.githubUrl !== '#' && (
                         <a 
                           href={project.githubUrl}
-                          className="text-gray-600 hover:text-primary transition"
+                          className="text-gray-600 hover:text-blue-900 transition"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -136,7 +136,7 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
                       {isLiveUrlValid && (
                         <a 
                           href={project.liveUrl}
-                          className="text-primary hover:text-secondary transition font-semibold"
+                          className="text-blue-900 hover:text-blue-800 transition font-semibold"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -157,7 +157,7 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
               <a
                 href="#" // Pas de lien réel, la navigation est gérée par JavaScript
                 onClick={handleViewAllClick} // <-- Appel de la fonction parente
-                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-primary hover:bg-secondary transition duration-300 transform hover:scale-105 cursor-pointer"
+                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-blue-900 hover:bg-blue-800 transition duration-300 transform hover:scale-105 cursor-pointer"
               >
                 {viewAllText}
                 <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

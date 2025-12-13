@@ -60,7 +60,7 @@ const SkillModal: React.FC<SkillModalProps> = ({
                 {modalCategory}
               </span>
               <div className="mt-1">
-                <span className="inline-block px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-medium">
+                <span className="inline-block px-3 py-1 rounded-full bg-blue-900/10 text-blue-900 font-medium">
                   {getCategoryLabel(skill.category)}
                 </span>
               </div>
@@ -78,7 +78,7 @@ const SkillModal: React.FC<SkillModalProps> = ({
             <div className="pt-4 border-t border-gray-200">
               <button
                 onClick={onClose}
-                className="w-full py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors duration-200"
+                className="w-full py-3 bg-blue-900 text-white font-semibold rounded-lg hover:bg-blue-900/90 transition-colors duration-200"
               >
                 {modalClose}
               </button>

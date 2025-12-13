@@ -129,7 +129,7 @@ const Skills: React.FC = () => {
     
     return (
       <div 
-        className="bg-white border-2 border-primary/20 rounded-xl px-6 py-4 text-center hover:bg-primary/15 hover:text-white transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer flex flex-col items-center justify-center"
+        className="bg-white border-2 border-blue-900/20 rounded-xl px-6 py-4 text-center hover:bg-blue-900/15 hover:text-white transition-all duration-300 hover:scale-105 hover:shadow-lg cursor-pointer flex flex-col items-center justify-center"
         onClick={() => handleSkillClick(skill)}
       >
         <IconComponent className="w-8 h-8 mb-2 text-gray-700 hover:text-gray-800 transition-colors" />
@@ -152,7 +152,7 @@ const Skills: React.FC = () => {
     );
   };
 
-  const SkillCategory = ({ title, skills, color = 'primary' }: { 
+  const SkillCategory = ({ title, skills, color = 'blue-900' }: { 
     title: string; 
     skills: Skill[]; 
     color?: string;
@@ -185,14 +185,14 @@ const Skills: React.FC = () => {
             <div className="mb-12">
               <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">{webDevTitle}</h3>
               <div className="space-y-8">
-                <SkillCategory title={frontendTitle} skills={skillCategories.frontend} color="primary" />
-                <SkillCategory title={backendTitle} skills={skillCategories.backend} color="secondary" />
+                <SkillCategory title={frontendTitle} skills={skillCategories.frontend} color="blue-900" />
+                <SkillCategory title={backendTitle} skills={skillCategories.backend} color="blue-800" />
               </div>
             </div>
 
             <div className="mb-12">
               <h3 className="text-3xl font-bold text-center text-gray-800 mb-8">{toolsTitle}</h3>
-              <SkillCategory title={devToolsTitle} skills={skillCategories.tools} color="green-600" />
+              <SkillCategory title={devToolsTitle} skills={skillCategories.tools} color="blue-900" />
             </div>
 
             <div className="mb-12">

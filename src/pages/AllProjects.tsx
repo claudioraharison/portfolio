@@ -74,7 +74,7 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
             className={`flex items-center font-medium transition ${
               isNavigatingBack 
                 ? 'text-gray-400 cursor-not-allowed' 
-                : 'text-primary hover:text-secondary'
+                : 'text-blue-900 hover:text-blue-800'
             }`}
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,14 +91,14 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
             placeholder={searchPlaceholder} 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-3 border border-gray-200 rounded-lg mb-4 focus:ring-2 focus:ring-primary focus:outline-none"
+            className="w-full p-3 border border-gray-200 rounded-lg mb-4 focus:ring-2 focus:ring-blue-900 focus:outline-none"
           />
           <div className="flex flex-wrap gap-2">
             {allCategories.map(cat => (
               <button 
                 key={cat} 
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition ${activeCategory === cat ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition ${activeCategory === cat ? 'bg-blue-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
               >
                 {cat}
               </button>
@@ -116,8 +116,8 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
             // Logique du badge Client/Statut
             const projectSource = project.client || 'Inconnu'; 
             const isPersonal = projectSource === 'Projet Personnel' || projectSource === 'Freelance';
-            const badgeBg = isPersonal ? 'bg-blue-100' : 'bg-green-100';
-            const badgeText = isPersonal ? 'text-blue-700' : 'text-green-700';
+            const badgeBg = isPersonal ? 'bg-blue-900/20' : 'bg-green-100';
+            const badgeText = isPersonal ? 'text-blue-900' : 'text-green-700';
             
             // Logique de validation du lien Live
             const isLiveUrlValid = project.liveUrl && project.liveUrl !== '#';
@@ -157,7 +157,7 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
                     </span>
                   </div>
                   
-                  <span className="text-xs font-bold text-primary mb-2 uppercase tracking-wide">
+                  <span className="text-xs font-bold text-blue-900 mb-2 uppercase tracking-wide">
                     {project.category || 'Autres'}
                   </span>
                   
@@ -175,7 +175,7 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
                         href={project.githubUrl} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-gray-500 hover:text-primary transition text-sm"
+                        className="text-gray-500 hover:text-blue-900 transition text-sm"
                       >
                         {codeText}
                       </a>
@@ -185,7 +185,7 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
                         href={project.liveUrl} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="text-primary hover:text-secondary font-medium transition text-sm"
+                        className="text-blue-900 hover:text-blue-800 font-medium transition text-sm"
                       >
                         {viewProjectText}
                       </a>
@@ -207,7 +207,7 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
 
       {/* Bouton Scroll Top */}
       {showScrollToTop && (
-        <button onClick={scrollToTop} className="fixed bottom-8 right-8 bg-primary text-white p-3 rounded-full shadow-lg hover:bg-secondary transition z-50">
+        <button onClick={scrollToTop} className="fixed bottom-8 right-8 bg-blue-900 text-white p-3 rounded-full shadow-lg hover:bg-blue-800 transition z-50">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
           </svg>

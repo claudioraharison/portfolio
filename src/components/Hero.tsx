@@ -45,7 +45,7 @@ const Hero: React.FC = () => {
 
   return (
     <>
-      <section id="home" className="min-h-screen flex items-center pt-16 bg-gradient-to-br from-blue-50 to-indigo-100">
+      <section id="home" className="min-h-screen flex items-center pt-16 bg-gradient-to-br from-blue-900/10 to-blue-800/20">
         <div className="container mx-auto px-10 py-20">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             {/* Partie texte */}
@@ -53,7 +53,7 @@ const Hero: React.FC = () => {
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
                 {title.split(' ').map((word, index) => 
                   word === 'Front-end' || word === 'Back-end' ? (
-                    <span key={index} className="text-primary">{word} </span>
+                    <span key={index} className="text-blue-900">{word} </span>
                   ) : (
                     <span key={index}>{word} </span>
                   )
@@ -65,13 +65,13 @@ const Hero: React.FC = () => {
               <div className="flex flex-wrap gap-4">
                 <a 
                   href="#projects" 
-                  className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition duration-300 shadow-lg hover:shadow-xl"
+                  className="bg-blue-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition duration-300 shadow-lg hover:shadow-xl"
                 >
                   {projectsBtn}
                 </a>
                 <a 
                   href="#contact" 
-                  className="border border-primary text-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary hover:text-white transition duration-300 shadow-lg hover:shadow-xl"
+                  className="border border-blue-900 text-blue-900 px-8 py-3 rounded-lg font-semibold hover:bg-blue-900 hover:text-white transition duration-300 shadow-lg hover:shadow-xl"
                 >
                   {contactBtn}
                 </a>
@@ -111,7 +111,7 @@ const Hero: React.FC = () => {
         >
           <div className="bg-white rounded-2xl w-full max-w-6xl h-[85vh] flex flex-col shadow-2xl modal-fade-in">
             {/* En-tête de la modale */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-2xl">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-gradient-to-r from-blue-900/10 to-blue-800/10 rounded-t-2xl">
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">Curriculum Vitae</h3>
                 <p className="text-gray-600 mt-1">{altText}</p>
@@ -141,7 +141,7 @@ const Hero: React.FC = () => {
               {isPdfLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 rounded-b-2xl">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-900 mx-auto mb-4"></div>
                     <p className="text-gray-600 text-lg">Chargement du CV...</p>
                   </div>
                 </div>
@@ -156,7 +156,7 @@ const Hero: React.FC = () => {
               <div className="flex gap-2">
                 <button
                   onClick={() => window.open(cvPdf, '_blank')}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-primary transition duration-300 border border-gray-300 rounded-lg hover:border-primary"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-blue-900 transition duration-300 border border-gray-300 rounded-lg hover:border-blue-900"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

@@ -17,7 +17,7 @@ const ConstructionPreview: React.FC<ConstructionPreviewProps> = ({ title }) => {
         strokeWidth="2" 
         strokeLinecap="round" 
         strokeLinejoin="round" 
-        className="text-primary mb-3"
+        className="text-blue-900 mb-3"
       >
         {/* Icône de Construction / Clé à molette (wrench) */}
         <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-2.43 2.43a2 2 0 0 0-.7 1.6v.9a1 1 0 0 0 1 1H9a1 1 0 0 0 1 1v.9a1 1 0 0 0 1 1h.7a2 2 0 0 0 1.6-.7l2.43-2.43a6 6 0 0 1 7.94-7.94l-3.77 3.77z"/>

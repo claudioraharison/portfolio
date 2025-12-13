@@ -105,9 +105,8 @@ const Contact: React.FC = () => {
             
             <div className="space-y-4">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-                  {/* <span className="text-primary">📧</span> */}
-                  <Mail className="text-primary w-6 h-6" />
+                <div className="w-12 h-12 bg-blue-900/10 rounded-full flex items-center justify-center mr-4">
+                  <Mail className="text-blue-900 w-6 h-6" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{emailLabel}</p>
@@ -116,9 +115,8 @@ const Contact: React.FC = () => {
               </div>
               
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-                  {/* <span className="text-primary">📱</span> */}
-                  <Smartphone className="text-primary w-6 h-6" />
+                <div className="w-12 h-12 bg-blue-900/10 rounded-full flex items-center justify-center mr-4">
+                  <Smartphone className="text-blue-900 w-6 h-6" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{phoneLabel}</p>
@@ -127,9 +125,8 @@ const Contact: React.FC = () => {
               </div>
               
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
-                  {/* <span className="text-primary">📍</span> */}
-                  <MapPin className="text-primary w-6 h-6" />
+                <div className="w-12 h-12 bg-blue-900/10 rounded-full flex items-center justify-center mr-4">
+                  <MapPin className="text-blue-900 w-6 h-6" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">{locationLabel}</p>
@@ -152,7 +149,7 @@ const Contact: React.FC = () => {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 transition duration-200"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent disabled:opacity-50 transition duration-200"
                 placeholder={namePlaceholder}
               />
             </div>
@@ -169,7 +166,7 @@ const Contact: React.FC = () => {
                 onChange={handleChange}
                 required
                 disabled={isLoading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 transition duration-200"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent disabled:opacity-50 transition duration-200"
                 placeholder={emailPlaceholder}
               />
             </div>
@@ -186,7 +183,7 @@ const Contact: React.FC = () => {
                 required
                 disabled={isLoading}
                 rows={5}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 transition duration-200 resize-vertical"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-900 focus:border-transparent disabled:opacity-50 transition duration-200 resize-vertical"
                 placeholder={messagePlaceholder}
               />
             </div>
@@ -195,7 +192,6 @@ const Contact: React.FC = () => {
             {submitStatus === 'success' && (
               <div className="p-4 bg-green-50 text-green-800 rounded-lg border border-green-200 animate-fadeIn">
                 <div className="flex items-center">
-                  {/* <span className="text-lg mr-3">✅</span> */}
                   <CheckCircle className="w-6 h-6 mr-3 text-green-500" />
                   <div>
                     <p className="font-medium">{successTitle}</p>
@@ -208,7 +204,6 @@ const Contact: React.FC = () => {
             {submitStatus === 'error' && (
               <div className="p-4 bg-red-50 text-red-800 rounded-lg border border-red-200 animate-fadeIn">
                 <div className="flex items-center">
-                  {/* <span className="text-lg mr-3">❌</span> */}
                   <XCircle className="w-6 h-6 mr-3 text-red-600" />
                   <div>
                     <p className="font-medium">{errorTitle}</p>
@@ -221,7 +216,7 @@ const Contact: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-secondary transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              className="w-full bg-blue-900 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-800 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               {isLoading ? (
                 <>
@@ -233,7 +228,6 @@ const Contact: React.FC = () => {
                 </>
               ) : (
                 <>
-                  {/* <span className="mr-2">📨</span> */}
                   <Mail className="w-5 h-5 mr-2 text-current" />
                   {sendButton}
                 </>

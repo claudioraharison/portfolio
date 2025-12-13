@@ -42,22 +42,22 @@ const About: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-8 items-start">
             {/* Partie texte - Alignement parfait */}
             <div className="space-y-6">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border-l-4 border-primary h-full">
+              <div className="bg-gradient-to-r from-blue-900/10 to-blue-800/10 p-6 rounded-2xl border-l-4 border-blue-900 h-full">
                 <p className="text-lg text-gray-700 leading-relaxed">
-                  <span className="font-semibold text-primary">{intro1Part1}</span>
+                  <span className="font-semibold text-blue-900">{intro1Part1}</span>
                   {intro1Part2}
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-2xl border-l-4 border-secondary h-full">
+              <div className="bg-gradient-to-r from-gray-50 to-blue-900/10 p-6 rounded-2xl border-l-4 border-blue-800 h-full">
                 <p className="text-lg text-gray-700 leading-relaxed">
                   {intro2Part1}
-                  <span className="font-medium text-primary">{intro2Tech}</span>
+                  <span className="font-medium text-blue-900">{intro2Tech}</span>
                   {intro2Part2}
                 </p>
               </div>
 
-              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-2xl border-l-4 border-primary h-full">
+              <div className="bg-gradient-to-r from-blue-900/10 to-purple-50 p-6 rounded-2xl border-l-4 border-blue-900 h-full">
                 <p className="text-lg text-gray-700 leading-relaxed">
                   {intro3}
                 </p>
@@ -65,14 +65,13 @@ const About: React.FC = () => {
             </div>
 
             {/* Partie informations - Alignement parfait */}
-            <div className="bg-gradient-to-br from-primary to-secondary p-1 rounded-2xl shadow-lg h-full">
+            <div className="bg-gradient-to-br from-blue-900 to-blue-800 p-1 rounded-2xl shadow-lg h-full">
               <div className="bg-white p-6 rounded-xl h-full flex flex-col">
                 <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">{infoTitle}</h3>
                 <div className="space-y-4 flex-1">
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[60px]">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      {/* <span className="text-primary text-lg">📍</span> */}
-                      <MapPin className="text-primary w-5 h-5" />
+                    <div className="w-10 h-10 bg-blue-900/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <MapPin className="text-blue-900 w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{location}</span>
@@ -81,9 +80,8 @@ const About: React.FC = () => {
                   </div>
                   
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[60px]">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      {/* <span className="text-primary text-lg">📧</span> */}
-                      <Mail className="text-primary w-5 h-5" />
+                    <div className="w-10 h-10 bg-blue-900/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Mail className="text-blue-900 w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{email}</span>
@@ -92,9 +90,8 @@ const About: React.FC = () => {
                   </div>
                   
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[80px]">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      {/* <span className="text-primary text-lg">📱</span> */}
-                      <Smartphone className="text-primary w-5 h-5" />
+                    <div className="w-10 h-10 bg-blue-900/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Smartphone className="text-blue-900 w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{phone}</span>
@@ -106,9 +103,8 @@ const About: React.FC = () => {
                   </div>
                   
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[60px]">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      {/* <span className="text-primary text-lg">✅</span> */}
-                      <CheckCircle className="text-primary w-5 h-5" />
+                    <div className="w-10 h-10 bg-blue-900/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="text-blue-900 w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{availability}</span>
@@ -117,9 +113,8 @@ const About: React.FC = () => {
                   </div>
                   
                   <div className="flex items-center space-x-4 p-3 rounded-lg hover:bg-gray-50 transition min-h-[60px]">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      {/* <span className="text-primary text-lg">🎯</span> */}
-                      <Star className="text-primary w-5 h-5" />
+                    <div className="w-10 h-10 bg-blue-900/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Star className="text-blue-900 w-5 h-5" />
                     </div>
                     <div className="flex-1">
                       <span className="font-medium text-gray-900 block">{specialties}</span>
@@ -133,10 +128,9 @@ const About: React.FC = () => {
 
           {/* Section compétences transversales - Alignement parfait */}
           <div className="mt-16 grid md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-sm hover:shadow-md transition h-full">
-              <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                {/* <span className="text-primary text-2xl">💻</span> */}
-                <Code className="text-primary w-7 h-7"/>
+            <div className="text-center p-6 bg-gradient-to-br from-blue-900/10 to-blue-800/10 rounded-2xl shadow-sm hover:shadow-md transition h-full">
+              <div className="w-14 h-14 bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Code className="text-blue-900 w-7 h-7"/>
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">{devTitle}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -144,10 +138,9 @@ const About: React.FC = () => {
               </p>
             </div>
             
-            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl shadow-sm hover:shadow-md transition h-full">
-              <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                {/* <span className="text-primary text-2xl">🗺️</span> */}
-                <Map className="text-primary w-7 h-7" />
+            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-blue-900/10 rounded-2xl shadow-sm hover:shadow-md transition h-full">
+              <div className="w-14 h-14 bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Map className="text-blue-900 w-7 h-7" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">{geoTitle}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -156,9 +149,8 @@ const About: React.FC = () => {
             </div>
             
             <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-sm hover:shadow-md transition h-full">
-              <div className="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                {/* <span className="text-primary text-2xl">📊</span> */}
-                <BarChart className="text-primary w-7 h-7" />
+              <div className="w-14 h-14 bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <BarChart className="text-blue-900 w-7 h-7" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">{dataTitle}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">

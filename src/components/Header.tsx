@@ -192,7 +192,7 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
       <nav className="container mx-auto px-4 sm:px-6 py-3">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3 sm:space-x-4">
-            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-primary shadow-lg transition-all duration-300 ${
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-blue-900 shadow-lg transition-all duration-300 ${
               isScrolled ? 'scale-90' : 'scale-100'
             }`}>
               <img 
@@ -205,12 +205,12 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="hidden w-full h-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-white font-bold text-sm sm:text-lg">
+              <div className="hidden w-full h-full bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center text-white font-bold text-sm sm:text-lg">
                 NC
               </div>
             </div>
             
-            <div className="text-primary">
+            <div className="text-blue-900">
               <div className="text-sm sm:text-base font-semibold opacity-90">Nirina Claudio</div>
               <div className="text-lg sm:text-xl font-bold leading-tight">RAHARISON</div>
             </div>
@@ -226,19 +226,19 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
                     key={link.href}
                     href={link.href} 
                     onClick={(e) => handleNavClick(link.href, e)}
-                    className={`px-4 py-2 text-gray-700 hover:text-primary transition-all duration-200 relative group flex items-center space-x-2 ${
+                    className={`px-4 py-2 text-gray-700 hover:text-blue-900 transition-all duration-200 relative group flex items-center space-x-2 ${
                       activeSection === link.href.replace('#', '')
-                        ? 'text-primary font-semibold'
-                        : 'text-gray-600 hover:text-primary'
+                        ? 'text-blue-900 font-semibold'
+                        : 'text-gray-600 hover:text-blue-900'
                     }`}
                   >
                     <IconComponent size={18} className="flex-shrink-0" />
                     <span>{link.label}</span>
                     
-                    <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
+                    <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
                     
                     {activeSection === link.href.replace('#', '') && (
-                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full"></span>
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-900 rounded-full"></span>
                     )}
                   </a>
                 );
@@ -256,18 +256,18 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
                     key={link.href}
                     href={link.href} 
                     onClick={(e) => handleNavClick(link.href, e)}
-                    className={`p-3 text-gray-700 hover:text-primary transition-all duration-200 relative group ${
+                    className={`p-3 text-gray-700 hover:text-blue-900 transition-all duration-200 relative group ${
                       activeSection === link.href.replace('#', '')
-                        ? 'text-primary font-semibold'
-                        : 'text-gray-600 hover:text-primary'
+                        ? 'text-blue-900 font-semibold'
+                        : 'text-gray-600 hover:text-blue-900'
                     }`}
                   >
                     <IconComponent size={20} className="flex-shrink-0" />
                     
-                    <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
+                    <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
                     
                     {activeSection === link.href.replace('#', '') && (
-                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full"></span>
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-900 rounded-full"></span>
                     )}
                     
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
@@ -285,7 +285,7 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
             <div className="hidden lg:block relative" ref={languageRef}>
               <button 
                 onClick={toggleLanguage}
-                className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-200 rounded-lg border border-gray-300 hover:border-primary bg-white/50 backdrop-blur-sm"
+                className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-blue-900 transition-all duration-200 rounded-lg border border-gray-300 hover:border-blue-900 bg-white/50 backdrop-blur-sm"
               >
                 <Globe size={18} />
                 <span className="font-medium">
@@ -302,14 +302,14 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
                       onClick={() => selectLanguage(languageItem.code)}
                       className={`w-full flex items-center space-x-3 px-4 py-2 text-left transition-all duration-200 ${
                         language === languageItem.code
-                          ? 'bg-primary/10 text-primary font-semibold'
+                          ? 'bg-blue-900/10 text-blue-900 font-semibold'
                           : 'text-gray-700 hover:bg-gray-100/50'
                       }`}
                     >
                       <span className="text-lg">{languageItem.flag}</span>
                       <span>{languageItem.name}</span>
                       {language === languageItem.code && (
-                        <span className="ml-auto w-2 h-2 bg-primary rounded-full"></span>
+                        <span className="ml-auto w-2 h-2 bg-blue-900 rounded-full"></span>
                       )}
                     </button>
                   ))}
@@ -322,7 +322,7 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
             <div className="hidden md:flex lg:hidden relative" ref={languageRef}>
               <button 
                 onClick={toggleLanguage}
-                className="p-2 text-gray-600 hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100/50 relative group"
+                className="p-2 text-gray-600 hover:text-blue-900 transition-all duration-200 rounded-lg hover:bg-gray-100/50 relative group"
                 title={languageTooltip}
               >
                 <Globe size={20} />
@@ -341,14 +341,14 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
                       onClick={() => selectLanguage(languageItem.code)}
                       className={`w-full flex items-center space-x-3 px-4 py-2 text-left transition-all duration-200 ${
                         language === languageItem.code
-                          ? 'bg-primary/10 text-primary font-semibold'
+                          ? 'bg-blue-900/10 text-blue-900 font-semibold'
                           : 'text-gray-700 hover:bg-gray-100/50'
                       }`}
                     >
                       <span className="text-lg">{languageItem.flag}</span>
                       <span>{languageItem.name}</span>
                       {language === languageItem.code && (
-                        <span className="ml-auto w-2 h-2 bg-primary rounded-full"></span>
+                        <span className="ml-auto w-2 h-2 bg-blue-900 rounded-full"></span>
                       )}
                     </button>
                   ))}
@@ -363,7 +363,7 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
               <div className="md:hidden relative" ref={languageRef}>
                 <button 
                   onClick={toggleLanguage}
-                  className="p-2 text-gray-600 hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100/50"
+                  className="p-2 text-gray-600 hover:text-blue-900 transition-all duration-200 rounded-lg hover:bg-gray-100/50"
                 >
                   <Globe size={20} />
                 </button>
@@ -376,14 +376,14 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
                         onClick={() => selectLanguage(languageItem.code)}
                         className={`w-full flex items-center space-x-3 px-4 py-2 text-left transition-all duration-200 ${
                           language === languageItem.code
-                            ? 'bg-primary/10 text-primary font-semibold'
+                            ? 'bg-blue-900/10 text-blue-900 font-semibold'
                             : 'text-gray-700 hover:bg-gray-100/50'
                         }`}
                       >
                         <span className="text-lg">{languageItem.flag}</span>
                         <span>{languageItem.name}</span>
                         {language === languageItem.code && (
-                          <span className="ml-auto w-2 h-2 bg-primary rounded-full"></span>
+                          <span className="ml-auto w-2 h-2 bg-blue-900 rounded-full"></span>
                         )}
                       </button>
                     ))}
@@ -395,7 +395,7 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
               {!hideMenu && (
                 <button 
                   ref={buttonRef}
-                  className="md:hidden p-2 text-gray-600 hover:text-primary transition-all duration-200 rounded-lg hover:bg-gray-100/50"
+                  className="md:hidden p-2 text-gray-600 hover:text-blue-900 transition-all duration-200 rounded-lg hover:bg-gray-100/50"
                   onClick={toggleMenu}
                   aria-label="Toggle menu"
                   aria-expanded={isMenuOpen}
@@ -430,14 +430,14 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
                       onClick={(e) => handleNavClick(link.href, e)}
                       className={`flex items-center space-x-3 px-6 py-4 transition-all duration-200 relative group ${
                         activeSection === link.href.replace('#', '')
-                          ? 'text-primary font-semibold'
-                          : 'text-gray-600 hover:text-primary'
+                          ? 'text-blue-900 font-semibold'
+                          : 'text-gray-600 hover:text-blue-900'
                       }`}
                     >
                       <IconComponent size={20} className="flex-shrink-0" />
                       <span className="font-medium">{link.label}</span>
                       
-                      <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
+                      <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
                     </a>
                   );
                 })}

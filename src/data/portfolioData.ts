@@ -31,16 +31,16 @@ export const projects: Project[] = [
     githubUrl: "#",
     liveUrl: "#",
   },
-  // {
-  //   id: 4,
-  //   title: "Analyse Spatiale des Données",
-  //   client: "Université X",
-  //   description: "Projet de modélisation cartographique des tendances démographiques régionales.",
-  //   category: "Cartographie & SIG",
-  //   technologies: ["QGIS", "ArcGIS", "Python", "R"],
-  //   githubUrl: "#",
-  //   liveUrl: "#",
-  // }
+  {
+    id: 4,
+    title: "Analyse Spatiale des Données",
+    client: "Université X",
+    description: "Projet de modélisation cartographique des tendances démographiques régionales.",
+    category: "Cartographie & SIG",
+    technologies: ["QGIS", "ArcGIS", "Python", "R"],
+    githubUrl: "#",
+    liveUrl: "#",
+  }
 ];
 
 export const skills: Skill[] = [
