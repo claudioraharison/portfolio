@@ -50,7 +50,7 @@ const Hero: React.FC = () => {
         className="min-h-screen flex items-center pt-16 relative overflow-hidden"
       >
         {/* Fond avec dégradé et motifs subtils */}
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/50 to-white z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/45 via-blue-50/50 to-white z-0"></div>
         
         {/* Motifs géométriques très subtils */}
         <div 

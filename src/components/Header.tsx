@@ -188,7 +188,7 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
     <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isScrolled 
         ? 'bg-blue-900/20 backdrop-blur-lg shadow-lg border-b border-blue-900/5' 
-        : 'bg-blue-800/10 backdrop-blur-sm shadow-sm'
+        : 'bg-blue-800/10 backdrop-blur-sm shadow-sm border-b border-transparent'
     }`}>
       <nav className="container mx-auto px-4 sm:px-6 py-3">
         <div className="flex justify-between items-center">
