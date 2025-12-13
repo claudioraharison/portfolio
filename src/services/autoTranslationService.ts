@@ -1,4 +1,4 @@
-export type Language = 'fr' | 'en' | 'mg';
+export type Language = 'fr' | 'en' | 'mg' | 'de';
 
 interface TranslationCache {
   [key: string]: {

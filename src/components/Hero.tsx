@@ -45,8 +45,27 @@ const Hero: React.FC = () => {
 
   return (
     <>
-      <section id="home" className="min-h-screen flex items-center pt-16 bg-gradient-to-br from-blue-900/10 to-blue-800/20">
-        <div className="container mx-auto px-10 py-20">
+      <section 
+        id="home" 
+        className="min-h-screen flex items-center pt-16 relative overflow-hidden"
+      >
+        {/* Fond avec dégradé et motifs subtils */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50/50 to-white z-0"></div>
+        
+        {/* Motifs géométriques très subtils */}
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 20% 80%, #3b82f6 1px, transparent 1px),
+              radial-gradient(circle at 80% 20%, #3b82f6 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px'
+          }}
+        ></div>
+        
+        {/* Contenu avec z-index supérieur */}
+        <div className="container mx-auto px-10 py-20 relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             {/* Partie texte */}
             <div className="max-w-2xl">

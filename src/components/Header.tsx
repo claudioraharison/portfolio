@@ -6,7 +6,7 @@ import {
   Wrench, 
   Rocket, 
   TrendingUp, 
-  Mail,
+  // Mail,
   Menu,
   X,
   Globe
@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
   const navSkills = useAutoTranslatedText('nav.skills', "Compétences");
   const navProjects = useAutoTranslatedText('nav.projects', "Projets");
   const navExperience = useAutoTranslatedText('nav.experience', "Expérience");
-  const navContact = useAutoTranslatedText('nav.contact', "Contact");
+  // const navContact = useAutoTranslatedText('nav.contact', "Contact");
   const languageTooltip = useAutoTranslatedText('nav.language_tooltip', "Langue");
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
     setIsLanguageOpen(!isLanguageOpen);
   };
 
-  const selectLanguage = (lang: 'fr' | 'en' | 'mg') => {
+  const selectLanguage = (lang: 'fr' | 'en' | 'mg' | 'de') => {
     setLanguage(lang);
     setIsLanguageOpen(false);
   };
@@ -148,12 +148,13 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
     { href: "#skills", label: navSkills, icon: Wrench },
     { href: "#projects", label: navProjects, icon: Rocket },
     { href: "#experience", label: navExperience, icon: TrendingUp },
-    { href: "#contact", label: navContact, icon: Mail }
+    // { href: "#contact", label: navContact, icon: Mail }
   ];
 
   const languages = [
     { code: 'fr' as const, name: 'Français', flag: '🇫🇷' },
     { code: 'en' as const, name: 'English', flag: '🇺🇸' },
+    { code: 'de' as const, name: 'Deutsch', flag: '🇩🇪' },
     // { code: 'mg' as const, name: 'Malagasy', flag: '🇲🇬' }
   ];
 
@@ -186,8 +187,8 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-white/45 backdrop-blur-lg shadow-lg border-b border-gray-200/50' 
-        : 'bg-white/40 backdrop-blur-sm shadow-sm'
+        ? 'bg-blue-900/20 backdrop-blur-lg shadow-lg border-b border-blue-900/5' 
+        : 'bg-blue-800/10 backdrop-blur-sm shadow-sm'
     }`}>
       <nav className="container mx-auto px-4 sm:px-6 py-3">
         <div className="flex justify-between items-center">
