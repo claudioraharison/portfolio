@@ -6,7 +6,7 @@ export const projects: Project[] = [
     title: "Plateforme MasterTable",
     client: "Rapex Group",
     description: "Développement d'une plateforme web complète avec interface interactive et réactive.",
-    category: "Web & Backend",
+    category: "Web & Fullstack",
     technologies: ["React", "TypeScript", "Tailwind CSS", "NestJS", "PostgreSQL", "Redis", "JavaScript", "Paypal", "Stripe"],
     githubUrl: "#",
     liveUrl: "https://mastertable.site",
@@ -31,16 +31,16 @@ export const projects: Project[] = [
     githubUrl: "#",
     liveUrl: "#",
   },
-  {
-    id: 4,
-    title: "Analyse Spatiale des Données",
-    client: "Université X",
-    description: "Projet de modélisation cartographique des tendances démographiques régionales.",
-    category: "Cartographie & SIG",
-    technologies: ["QGIS", "ArcGIS", "Python", "R"],
-    githubUrl: "#",
-    liveUrl: "#",
-  }
+  // {
+  //   id: 4,
+  //   title: "Analyse Spatiale des Données",
+  //   client: "Université X",
+  //   description: "Projet de modélisation cartographique des tendances démographiques régionales.",
+  //   category: "Cartographie & SIG",
+  //   technologies: ["QGIS", "ArcGIS", "Python", "R"],
+  //   githubUrl: "#",
+  //   liveUrl: "#",
+  // }
 ];
 
 export const skills: Skill[] = [

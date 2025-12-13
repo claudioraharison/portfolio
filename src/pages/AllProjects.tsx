@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { projects } from '../data/portfolioData';
 import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
+import ConstructionPreview from '../components/ConstructionPreview';
 
 interface AllProjectsPageProps {
   onBackClick: () => void;
@@ -21,7 +22,6 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
   const codeText = useAutoTranslatedText('Code', 'Code');
   const viewProjectText = useAutoTranslatedText('Voir le site', 'Voir le site');
   const loadingText = useAutoTranslatedText('Chargement...', 'Chargement...');
-  const previewNotAvailableText = useAutoTranslatedText('Aperçu non disponible', 'Aperçu non disponible');
   const noProjectsText = useAutoTranslatedText('Aucun projet trouvé', 'Aucun projet trouvé');
 
   // Gestion du retour avec indicateur de chargement
@@ -109,10 +109,6 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
         {/* Grille des Projets avec traduction automatique */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map((project) => {
-            // Traduction automatique des titres et descriptions
-            const translatedTitle = useAutoTranslatedText(project.title, project.title);
-            const translatedDescription = useAutoTranslatedText(project.description, project.description);
-
             // Logique du badge Client/Statut
             const projectSource = project.client || 'Inconnu'; 
             const isPersonal = projectSource === 'Projet Personnel' || projectSource === 'Freelance';
@@ -125,30 +121,28 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
             return (
               <div key={project.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition flex flex-col h-full">
                 
-                {/* IFRAME */}
-                {isLiveUrlValid ? (
-                  <div className="w-full h-[200px] border-b border-gray-200 bg-gray-100 flex items-center justify-center">
+                {/* IFRAME ou ConstructionPreview */}
+                <div className="w-full h-[200px] border-b border-gray-200 bg-gray-100 relative">
+                  {isLiveUrlValid ? (
                     <iframe 
                       src={project.liveUrl} 
-                      title={`Aperçu de ${translatedTitle}`}
+                      title={`Aperçu de ${project.title}`}
                       width="100%" 
                       height="100%" 
                       frameBorder="0"
                       scrolling="no"
                       className="pointer-events-none"
                     />
-                  </div>
-                ) : (
-                  <div className="w-full h-[200px] border-b border-gray-200 bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
-                    {previewNotAvailableText}
-                  </div>
-                )}
+                  ) : (
+                    <ConstructionPreview title={project.title} />
+                  )}
+                </div>
 
                 {/* Carte de projet avec contenu traduit automatiquement */}
                 <div className="p-6 flex flex-col flex-grow">
                   {/* En-tête avec titre et badge */}
                   <div className="flex items-center mb-3">
-                    <h3 className="text-xl font-bold text-gray-900 mr-2">{translatedTitle}</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mr-2">{project.title}</h3>
                     {/* Badge Client/Statut */}
                     <span 
                       className={`${badgeBg} ${badgeText} text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0`}
@@ -161,7 +155,7 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
                     {project.category || 'Autres'}
                   </span>
                   
-                  <p className="text-gray-600 mb-4 flex-grow">{translatedDescription}</p>
+                  <p className="text-gray-600 mb-4 flex-grow">{project.description}</p>
                   
                   <div className="flex flex-wrap gap-2 mb-4">
                     {project.technologies.map((tech, i) => (
