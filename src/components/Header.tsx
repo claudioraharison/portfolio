@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAutoTranslation } from '../contexts/AutoTranslationContext';
 import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
+import ProfileModal from './ProfileModal';
 
 // Définition du type de props avec hideMenu optionnel
 interface HeaderProps {
@@ -25,6 +26,7 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
   const [activeSection, setActiveSection] = useState('home');
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const { language, setLanguage } = useAutoTranslation();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -91,6 +93,10 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
   const selectLanguage = (lang: 'fr' | 'en' | 'mg' | 'de') => {
     setLanguage(lang);
     setIsLanguageOpen(false);
+  };
+
+  const openProfileModal = () => {
+    setIsProfileModalOpen(true);
   };
 
   useEffect(() => {
@@ -185,188 +191,115 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
   const displayMode = getDisplayMode();
 
   return (
-    <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-blue-900/20 backdrop-blur-lg shadow-lg border-b border-blue-900/5' 
-        : 'bg-blue-800/10 backdrop-blur-sm shadow-sm border-b border-transparent'
-    }`}>
-      <nav className="container mx-auto px-4 sm:px-6 py-3">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-blue-900 shadow-lg transition-all duration-300 ${
-              isScrolled ? 'scale-90' : 'scale-100'
-            }`}>
-              <img 
-                src={profileImage}
-                alt="Nirina Claudio RAHARISON"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  target.nextElementSibling?.classList.remove('hidden');
-                }}
-              />
-              <div className="hidden w-full h-full bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center text-white font-bold text-sm sm:text-lg">
-                NC
+    <>
+      <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-blue-900/20 backdrop-blur-lg shadow-lg border-b border-blue-900/5' 
+          : 'bg-blue-800/10 backdrop-blur-sm shadow-sm border-b border-transparent'
+      }`}>
+        <nav className="container mx-auto px-4 sm:px-6 py-3">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-3 sm:space-x-4" onClick={openProfileModal} style={{ cursor: 'pointer' }}>
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden border-2 border-blue-900 shadow-lg transition-all duration-300 ${
+                isScrolled ? 'scale-90' : 'scale-100'
+              }`}>
+                <img 
+                  src={profileImage}
+                  alt="Nirina Claudio RAHARISON"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                <div className="hidden w-full h-full bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center text-white font-bold text-sm sm:text-lg">
+                  NC
+                </div>
+              </div>
+              
+              <div className="text-blue-900">
+                <div className="text-sm sm:text-base font-semibold opacity-90">Nirina Claudio</div>
+                <div className="text-lg sm:text-xl font-bold leading-tight">RAHARISON</div>
               </div>
             </div>
-            
-            <div className="text-blue-900">
-              <div className="text-sm sm:text-base font-semibold opacity-90">Nirina Claudio</div>
-              <div className="text-lg sm:text-xl font-bold leading-tight">RAHARISON</div>
-            </div>
-          </div>
 
-          {/* Condition pour afficher le menu seulement si hideMenu est false */}
-          {!hideMenu && displayMode === 'desktop-full' && (
-            <div className="hidden lg:flex items-center space-x-1">
-              {navLinks.map((link) => {
-                const IconComponent = link.icon;
-                return (
-                  <a 
-                    key={link.href}
-                    href={link.href} 
-                    onClick={(e) => handleNavClick(link.href, e)}
-                    className={`px-4 py-2 text-gray-700 hover:text-blue-900 transition-all duration-200 relative group flex items-center space-x-2 ${
-                      activeSection === link.href.replace('#', '')
-                        ? 'text-blue-900 font-semibold'
-                        : 'text-gray-600 hover:text-blue-900'
-                    }`}
-                  >
-                    <IconComponent size={18} className="flex-shrink-0" />
-                    <span>{link.label}</span>
-                    
-                    <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
-                    
-                    {activeSection === link.href.replace('#', '') && (
-                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-900 rounded-full"></span>
-                    )}
-                  </a>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Condition pour afficher le menu seulement si hideMenu est false */}
-          {!hideMenu && displayMode === 'desktop-icons' && (
-            <div className="hidden md:flex lg:hidden items-center space-x-1">
-              {navLinks.map((link) => {
-                const IconComponent = link.icon;
-                return (
-                  <a 
-                    key={link.href}
-                    href={link.href} 
-                    onClick={(e) => handleNavClick(link.href, e)}
-                    className={`p-3 text-gray-700 hover:text-blue-900 transition-all duration-200 relative group ${
-                      activeSection === link.href.replace('#', '')
-                        ? 'text-blue-900 font-semibold'
-                        : 'text-gray-600 hover:text-blue-900'
-                    }`}
-                  >
-                    <IconComponent size={20} className="flex-shrink-0" />
-                    
-                    <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
-                    
-                    {activeSection === link.href.replace('#', '') && (
-                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-900 rounded-full"></span>
-                    )}
-                    
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                      {link.label}
-                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Le sélecteur de langue reste toujours visible */}
-          {displayMode === 'desktop-full' && (
-            <div className="hidden lg:block relative" ref={languageRef}>
-              <button 
-                onClick={toggleLanguage}
-                className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-blue-900 transition-all duration-200 rounded-lg border border-gray-300 hover:border-blue-900 bg-white/50 backdrop-blur-sm"
-              >
-                <Globe size={18} />
-                <span className="font-medium">
-                  {languages.find(lang => lang.code === language)?.flag}
-                </span>
-                <span className="w-2 h-2 border-r border-b border-gray-400 transform rotate-45 transition-transform duration-200"></span>
-              </button>
-
-              {isLanguageOpen && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-lg rounded-lg shadow-lg border border-gray-200/50 py-2 z-50">
-                  {languages.map((languageItem) => (
-                    <button
-                      key={languageItem.code}
-                      onClick={() => selectLanguage(languageItem.code)}
-                      className={`w-full flex items-center space-x-3 px-4 py-2 text-left transition-all duration-200 ${
-                        language === languageItem.code
-                          ? 'bg-blue-900/10 text-blue-900 font-semibold'
-                          : 'text-gray-700 hover:bg-gray-100/50'
+            {/* Condition pour afficher le menu seulement si hideMenu est false */}
+            {!hideMenu && displayMode === 'desktop-full' && (
+              <div className="hidden lg:flex items-center space-x-1">
+                {navLinks.map((link) => {
+                  const IconComponent = link.icon;
+                  return (
+                    <a 
+                      key={link.href}
+                      href={link.href} 
+                      onClick={(e) => handleNavClick(link.href, e)}
+                      className={`px-4 py-2 text-gray-700 hover:text-blue-900 transition-all duration-200 relative group flex items-center space-x-2 ${
+                        activeSection === link.href.replace('#', '')
+                          ? 'text-blue-900 font-semibold'
+                          : 'text-gray-600 hover:text-blue-900'
                       }`}
                     >
-                      <span className="text-lg">{languageItem.flag}</span>
-                      <span>{languageItem.name}</span>
-                      {language === languageItem.code && (
-                        <span className="ml-auto w-2 h-2 bg-blue-900 rounded-full"></span>
+                      <IconComponent size={18} className="flex-shrink-0" />
+                      <span>{link.label}</span>
+                      
+                      <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
+                      
+                      {activeSection === link.href.replace('#', '') && (
+                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-900 rounded-full"></span>
                       )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                    </a>
+                  );
+                })}
+              </div>
+            )}
 
-          {displayMode === 'desktop-icons' && (
-            <div className="hidden md:flex lg:hidden relative" ref={languageRef}>
-              <button 
-                onClick={toggleLanguage}
-                className="p-2 text-gray-600 hover:text-blue-900 transition-all duration-200 rounded-lg hover:bg-gray-100/50 relative group"
-                title={languageTooltip}
-              >
-                <Globe size={20} />
-                
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                  {languageTooltip}
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
-                </div>
-              </button>
-
-              {isLanguageOpen && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-lg rounded-lg shadow-lg border border-gray-200/50 py-2 z-50">
-                  {languages.map((languageItem) => (
-                    <button
-                      key={languageItem.code}
-                      onClick={() => selectLanguage(languageItem.code)}
-                      className={`w-full flex items-center space-x-3 px-4 py-2 text-left transition-all duration-200 ${
-                        language === languageItem.code
-                          ? 'bg-blue-900/10 text-blue-900 font-semibold'
-                          : 'text-gray-700 hover:bg-gray-100/50'
+            {/* Condition pour afficher le menu seulement si hideMenu est false */}
+            {!hideMenu && displayMode === 'desktop-icons' && (
+              <div className="hidden md:flex lg:hidden items-center space-x-1">
+                {navLinks.map((link) => {
+                  const IconComponent = link.icon;
+                  return (
+                    <a 
+                      key={link.href}
+                      href={link.href} 
+                      onClick={(e) => handleNavClick(link.href, e)}
+                      className={`p-3 text-gray-700 hover:text-blue-900 transition-all duration-200 relative group ${
+                        activeSection === link.href.replace('#', '')
+                          ? 'text-blue-900 font-semibold'
+                          : 'text-gray-600 hover:text-blue-900'
                       }`}
                     >
-                      <span className="text-lg">{languageItem.flag}</span>
-                      <span>{languageItem.name}</span>
-                      {language === languageItem.code && (
-                        <span className="ml-auto w-2 h-2 bg-blue-900 rounded-full"></span>
+                      <IconComponent size={20} className="flex-shrink-0" />
+                      
+                      <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
+                      
+                      {activeSection === link.href.replace('#', '') && (
+                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-900 rounded-full"></span>
                       )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+                      
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                        {link.label}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
 
-          {/* Pour mobile */}
-          {displayMode === 'mobile' && (
-            <div className="flex items-center space-x-2">
-              <div className="md:hidden relative" ref={languageRef}>
+            {/* Le sélecteur de langue reste toujours visible */}
+            {displayMode === 'desktop-full' && (
+              <div className="hidden lg:block relative" ref={languageRef}>
                 <button 
                   onClick={toggleLanguage}
-                  className="p-2 text-gray-600 hover:text-blue-900 transition-all duration-200 rounded-lg hover:bg-gray-100/50"
+                  className="flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-blue-900 transition-all duration-200 rounded-lg border border-gray-300 hover:border-blue-900 bg-white/50 backdrop-blur-sm"
                 >
-                  <Globe size={20} />
+                  <Globe size={18} />
+                  <span className="font-medium">
+                    {languages.find(lang => lang.code === language)?.flag}
+                  </span>
+                  <span className="w-2 h-2 border-r border-b border-gray-400 transform rotate-45 transition-transform duration-200"></span>
                 </button>
 
                 {isLanguageOpen && (
@@ -391,73 +324,153 @@ const Header: React.FC<HeaderProps> = ({ hideMenu = false }) => {
                   </div>
                 )}
               </div>
-
-              {/* Bouton menu mobile - caché si hideMenu est true */}
-              {!hideMenu && (
-                <button 
-                  ref={buttonRef}
-                  className="md:hidden p-2 text-gray-600 hover:text-blue-900 transition-all duration-200 rounded-lg hover:bg-gray-100/50"
-                  onClick={toggleMenu}
-                  aria-label="Toggle menu"
-                  aria-expanded={isMenuOpen}
-                >
-                  {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Menu mobile - caché si hideMenu est true */}
-        {!hideMenu && displayMode === 'mobile' && (
-          <>
-            <div 
-              ref={menuRef}
-              className={`
-                md:hidden absolute top-full left-0 w-full bg-white/80 backdrop-blur-lg shadow-xl border-t border-gray-200/30 transition-all duration-300 ease-out
-                ${isMenuOpen 
-                  ? 'opacity-100 translate-y-0 visible' 
-                  : 'opacity-0 -translate-y-4 invisible'
-                }
-              `}
-            >
-              <div className="flex flex-col py-4 max-h-[80vh] overflow-y-auto">
-                {navLinks.map((link) => {
-                  const IconComponent = link.icon;
-                  return (
-                    <a 
-                      key={link.href}
-                      href={link.href} 
-                      onClick={(e) => handleNavClick(link.href, e)}
-                      className={`flex items-center space-x-3 px-6 py-4 transition-all duration-200 relative group ${
-                        activeSection === link.href.replace('#', '')
-                          ? 'text-blue-900 font-semibold'
-                          : 'text-gray-600 hover:text-blue-900'
-                      }`}
-                    >
-                      <IconComponent size={20} className="flex-shrink-0" />
-                      <span className="font-medium">{link.label}</span>
-                      
-                      <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-
-            {(isMenuOpen || isLanguageOpen) && (
-              <div 
-                className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40 top-0 left-0 w-full h-full"
-                onClick={() => {
-                  closeMenu();
-                  setIsLanguageOpen(false);
-                }}
-              />
             )}
-          </>
-        )}
-      </nav>
-    </header>
+
+            {displayMode === 'desktop-icons' && (
+              <div className="hidden md:flex lg:hidden relative" ref={languageRef}>
+                <button 
+                  onClick={toggleLanguage}
+                  className="p-2 text-gray-600 hover:text-blue-900 transition-all duration-200 rounded-lg hover:bg-gray-100/50 relative group"
+                  title={languageTooltip}
+                >
+                  <Globe size={20} />
+                  
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                    {languageTooltip}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                  </div>
+                </button>
+
+                {isLanguageOpen && (
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-lg rounded-lg shadow-lg border border-gray-200/50 py-2 z-50">
+                    {languages.map((languageItem) => (
+                      <button
+                        key={languageItem.code}
+                        onClick={() => selectLanguage(languageItem.code)}
+                        className={`w-full flex items-center space-x-3 px-4 py-2 text-left transition-all duration-200 ${
+                          language === languageItem.code
+                            ? 'bg-blue-900/10 text-blue-900 font-semibold'
+                            : 'text-gray-700 hover:bg-gray-100/50'
+                        }`}
+                      >
+                        <span className="text-lg">{languageItem.flag}</span>
+                        <span>{languageItem.name}</span>
+                        {language === languageItem.code && (
+                          <span className="ml-auto w-2 h-2 bg-blue-900 rounded-full"></span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Pour mobile */}
+            {displayMode === 'mobile' && (
+              <div className="flex items-center space-x-2">
+                <div className="md:hidden relative" ref={languageRef}>
+                  <button 
+                    onClick={toggleLanguage}
+                    className="p-2 text-gray-600 hover:text-blue-900 transition-all duration-200 rounded-lg hover:bg-gray-100/50"
+                  >
+                    <Globe size={20} />
+                  </button>
+
+                  {isLanguageOpen && (
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-white/95 backdrop-blur-lg rounded-lg shadow-lg border border-gray-200/50 py-2 z-50">
+                      {languages.map((languageItem) => (
+                        <button
+                          key={languageItem.code}
+                          onClick={() => selectLanguage(languageItem.code)}
+                          className={`w-full flex items-center space-x-3 px-4 py-2 text-left transition-all duration-200 ${
+                            language === languageItem.code
+                              ? 'bg-blue-900/10 text-blue-900 font-semibold'
+                              : 'text-gray-700 hover:bg-gray-100/50'
+                          }`}
+                        >
+                          <span className="text-lg">{languageItem.flag}</span>
+                          <span>{languageItem.name}</span>
+                          {language === languageItem.code && (
+                            <span className="ml-auto w-2 h-2 bg-blue-900 rounded-full"></span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Bouton menu mobile - caché si hideMenu est true */}
+                {!hideMenu && (
+                  <button 
+                    ref={buttonRef}
+                    className="md:hidden p-2 text-gray-600 hover:text-blue-900 transition-all duration-200 rounded-lg hover:bg-gray-100/50"
+                    onClick={toggleMenu}
+                    aria-label="Toggle menu"
+                    aria-expanded={isMenuOpen}
+                  >
+                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Menu mobile - caché si hideMenu est true */}
+          {!hideMenu && displayMode === 'mobile' && (
+            <>
+              <div 
+                ref={menuRef}
+                className={`
+                  md:hidden absolute top-full left-0 w-full bg-white/80 backdrop-blur-lg shadow-xl border-t border-gray-200/30 transition-all duration-300 ease-out
+                  ${isMenuOpen 
+                    ? 'opacity-100 translate-y-0 visible' 
+                    : 'opacity-0 -translate-y-4 invisible'
+                  }
+                `}
+              >
+                <div className="flex flex-col py-4 max-h-[80vh] overflow-y-auto">
+                  {navLinks.map((link) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <a 
+                        key={link.href}
+                        href={link.href} 
+                        onClick={(e) => handleNavClick(link.href, e)}
+                        className={`flex items-center space-x-3 px-6 py-4 transition-all duration-200 relative group ${
+                          activeSection === link.href.replace('#', '')
+                            ? 'text-blue-900 font-semibold'
+                            : 'text-gray-600 hover:text-blue-900'
+                        }`}
+                      >
+                        <IconComponent size={20} className="flex-shrink-0" />
+                        <span className="font-medium">{link.label}</span>
+                        
+                        <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-blue-900 transition-all duration-200 group-hover:w-full group-hover:left-0"></span>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {(isMenuOpen || isLanguageOpen) && (
+                <div 
+                  className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-40 top-0 left-0 w-full h-full"
+                  onClick={() => {
+                    closeMenu();
+                    setIsLanguageOpen(false);
+                  }}
+                />
+              )}
+            </>
+          )}
+        </nav>
+      </header>
+
+      <ProfileModal 
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
+    </>
   );
 };
 
