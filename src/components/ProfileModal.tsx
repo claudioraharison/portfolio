@@ -42,32 +42,109 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
   const languagesTitle = useAutoTranslatedText('modal.languages', 'Langues');
   const downloadCv = useAutoTranslatedText('modal.download_cv', 'Télécharger le CV complet');
   const viewProjects = useAutoTranslatedText('modal.view_projects', 'Voir mes projets');
-  // const backToProfile = useAutoTranslatedText('modal.back_to_profile', 'Retour au profil');
   const closeModal = useAutoTranslatedText('modal.close', 'Fermer');
   const availability = useAutoTranslatedText('modal.availability', 'Disponibilité');
   const driverLicense = useAutoTranslatedText('modal.driver_license', 'Permis de conduire');
+  const mobileMain = useAutoTranslatedText('modal.mobile_main', 'Mobile principal');
+  const professionalEmail = useAutoTranslatedText('modal.professional_email', 'Email professionnel');
+  const strengthsForRecruiters = useAutoTranslatedText('modal.strengths_for_recruiters', 'Points forts pour recruteurs :');
+  const doubleExpertise = useAutoTranslatedText('modal.double_expertise', 'Double expertise tech + géosciences');
+  const frontendBackendExperience = useAutoTranslatedText('modal.frontend_backend_experience', 'Expérience en développement Front-end & Back-end');
+  const gisMastery = useAutoTranslatedText('modal.gis_mastery', 'Maîtrise des SIG et outils géomatiques');
+  const versatileAdaptable = useAutoTranslatedText('modal.versatile_adaptable', 'Polyvalent et adaptabilité rapide');
+  const certifications = useAutoTranslatedText('modal.certifications', 'Certifications');
+  const categoryB = useAutoTranslatedText('modal.category_b', 'Catégorie B');
+  const contactDirect = useAutoTranslatedText('modal.contact_direct', 'Contact direct');
+  const malagasyNative = useAutoTranslatedText('modal.malagasy_native', 'Malagasy');
+  const frenchLevel = useAutoTranslatedText('modal.french_level', 'Français');
+  const englishLevel = useAutoTranslatedText('modal.english_level', 'Anglais');
+  const germanLevel = useAutoTranslatedText('modal.german_level', 'Allemand');
+  const nativeLevel = useAutoTranslatedText('modal.native_level', 'Natif');
+  const professionalLevel = useAutoTranslatedText('modal.professional_level', 'Professionnel');
+  const beginnerLevel = useAutoTranslatedText('modal.beginner_level', 'Notions');
+  const doubleCompetence = useAutoTranslatedText('modal.double_competence', 'Double compétence : Développement Web Front-end & back-end + Expertise en Géomatique & en Géosciences');
+  const immediateAvailability = useAutoTranslatedText('modal.immediate_availability', 'Immédiate');
+  const expandPhoto = useAutoTranslatedText('modal.expand_photo', 'Agrandir la photo');
+  
+  // Textes supplémentaires pour l'éducation et compétences
+  const master2Geogell = useAutoTranslatedText('modal.master2_geogell', 'Master 2 GECOGELL');
+  const universityAntananarivo = useAutoTranslatedText('modal.university_antananarivo', 'Université d\'Antananarivo');
+  const geotourismSpecialty = useAutoTranslatedText('modal.geotourism_specialty', 'Géotourisme, Écotourisme et Géorisque');
+  const master1Geogell = useAutoTranslatedText('modal.master1_geogell', 'Master 1 GECOGELL');
+  const sedimentaryBasinsSpecialty = useAutoTranslatedText('modal.sedimentary_basins_specialty', 'Bassins sédimentaires, Évolution Conservation');
+  const licensePseg = useAutoTranslatedText('modal.license_pseg', 'Licence PSEG');
+  const heritageScienceSpecialty = useAutoTranslatedText('modal.heritage_science_specialty', 'Patrimoine Scientifique, Évolution, Gestion');
+  const webDevelopmentTraining = useAutoTranslatedText('modal.web_development_training', 'Formation Développement Web');
+  const frontendBackendInstitution = useAutoTranslatedText('modal.frontend_backend_institution', 'Front-end & Back-end');
+  const fullstackJavascriptSpecialty = useAutoTranslatedText('modal.fullstack_javascript_specialty', 'Fullstack JavaScript');
+  
+  // Textes pour les compétences techniques
+  const frontendCategory = useAutoTranslatedText('modal.frontend_category', 'Frontend');
+  const backendCategory = useAutoTranslatedText('modal.backend_category', 'Backend');
+  const databasesCategory = useAutoTranslatedText('modal.databases_category', 'Bases de données');
+  const toolsDevopsCategory = useAutoTranslatedText('modal.tools_devops_category', 'Outils & DevOps');
+  const geomaticsCategory = useAutoTranslatedText('modal.geomatics_category', 'Géomatique');
+  const designCategory = useAutoTranslatedText('modal.design_category', 'Design');
   
   const technicalSkills = [
-    { category: 'Frontend', skills: ['React', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'TailwindCSS', 'Bootstrap'] },
-    { category: 'Backend', skills: ['Node.js', 'NestJS', 'Express.js', 'PHP', 'Python'] },
-    { category: 'Bases de données', skills: ['PostgreSQL', 'MySQL', 'Redis', 'SQL'] },
-    { category: 'Outils & DevOps', skills: ['Git', 'Docker', 'VS Code', 'Figma'] },
-    { category: 'Géomatique', skills: ['QGIS', 'ArcGIS', 'AutoCAD', 'ENVI', 'Surfer', 'SGeMS'] },
-    { category: 'Design', skills: ['Adobe Photoshop', 'Adobe Illustrator', 'Adobe InDesign', 'UI/UX Design'] }
+    { 
+      category: frontendCategory, 
+      skills: ['React', 'TypeScript', 'JavaScript', 'HTML5', 'CSS3', 'TailwindCSS', 'Bootstrap'] 
+    },
+    { 
+      category: backendCategory, 
+      skills: ['Node.js', 'NestJS', 'Express.js', 'PHP', 'Python'] 
+    },
+    { 
+      category: databasesCategory, 
+      skills: ['PostgreSQL', 'MySQL', 'Redis', 'SQL'] 
+    },
+    { 
+      category: toolsDevopsCategory, 
+      skills: ['Git', 'Docker', 'VS Code', 'Figma'] 
+    },
+    { 
+      category: geomaticsCategory, 
+      skills: ['QGIS', 'ArcGIS', 'AutoCAD', 'ENVI', 'Surfer', 'SGeMS'] 
+    },
+    { 
+      category: designCategory, 
+      skills: ['Adobe Photoshop', 'Adobe Illustrator', 'Adobe InDesign', 'UI/UX Design'] 
+    }
   ];
   
   const languages = [
-    { language: 'Malagasy', level: 'Langue maternelle', levelText: 'Natif' },
-    { language: 'Français', level: 'Niveau B2', levelText: 'Courant' },
-    { language: 'Anglais', level: 'Intermédiaire', levelText: 'Professionnel' },
-    { language: 'Allemand', level: 'Débutant', levelText: 'Notions' }
+    { language: malagasyNative, level: useAutoTranslatedText('modal.mother_tongue', 'Langue maternelle'), levelText: nativeLevel },
+    { language: frenchLevel, level: useAutoTranslatedText('modal.level_b2', 'Niveau B2'), levelText: useAutoTranslatedText('modal.fluent', 'Courant') },
+    { language: englishLevel, level: useAutoTranslatedText('modal.intermediate', 'Intermédiaire'), levelText: professionalLevel },
+    { language: germanLevel, level: useAutoTranslatedText('modal.beginner', 'Débutant'), levelText: beginnerLevel }
   ];
   
   const education = [
-    { degree: 'Master 2 GECOGELL', institution: 'Université d\'Antananarivo', year: '2019-2021', specialty: 'Géotourisme, Écotourisme et Géorisque' },
-    { degree: 'Master 1 GECOGELL', institution: 'Université d\'Antananarivo', year: '2018-2019', specialty: 'Bassins sédimentaires, Évolution Conservation' },
-    { degree: 'Licence PSEG', institution: 'Université d\'Antananarivo', year: '2017-2018', specialty: 'Patrimoine Scientifique, Évolution, Gestion' },
-    { degree: 'Formation Développement Web', institution: 'Front-end & Back-end', year: '2024-2025', specialty: 'Fullstack JavaScript' }
+    { 
+      degree: master2Geogell, 
+      institution: universityAntananarivo, 
+      year: '2019-2021', 
+      specialty: geotourismSpecialty 
+    },
+    { 
+      degree: master1Geogell, 
+      institution: universityAntananarivo, 
+      year: '2018-2019', 
+      specialty: sedimentaryBasinsSpecialty 
+    },
+    { 
+      degree: licensePseg, 
+      institution: universityAntananarivo, 
+      year: '2017-2018', 
+      specialty: heritageScienceSpecialty 
+    },
+    { 
+      degree: webDevelopmentTraining, 
+      institution: frontendBackendInstitution, 
+      year: '2024-2025', 
+      specialty: fullstackJavascriptSpecialty 
+    }
   ];
   
   useEffect(() => {
@@ -165,7 +242,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
               <button
                 onClick={openImageModal}
                 className="absolute -bottom-2 -right-2 bg-blue-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-blue-500 shadow-lg"
-                aria-label="Agrandir la photo"
+                aria-label={expandPhoto}
               >
                 <Maximize2 size={14} />
               </button>
@@ -182,7 +259,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 <span className="font-medium">{role}</span>
               </p>
               <p className="text-blue-100/90 text-sm mt-2">
-                Double compétence : Développement Web Front-end & back-end + Expertise en Géomatique & en Géosciences
+                {doubleCompetence}
               </p>
             </div>
           </div>
@@ -214,7 +291,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                     <a href="tel:+261344107869" className="text-gray-800 hover:text-blue-900">
                       +261 34 41 078 69 / +261 37 68 590 47
                     </a>
-                    <div className="text-sm text-gray-500">Mobile principal</div>
+                    <div className="text-sm text-gray-500">{mobileMain}</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -223,7 +300,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                     <a href="mailto:claudionirina3@gmail.com" className="text-gray-800 hover:text-blue-900">
                       claudio.raharison@gmail.com
                     </a>
-                    <div className="text-sm text-gray-500">Email professionnel</div>
+                    <div className="text-sm text-gray-500">{professionalEmail}</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -254,23 +331,23 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
             </div>
             
             <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-              <h4 className="font-semibold text-blue-900 mb-2">Points forts pour recruteurs :</h4>
+              <h4 className="font-semibold text-blue-900 mb-2">{strengthsForRecruiters}</h4>
               <ul className="text-gray-700 space-y-2 text-sm">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-900 mt-1">•</span>
-                  <span>Double expertise tech + géosciences</span>
+                  <span>{doubleExpertise}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-900 mt-1">•</span>
-                  <span>Expérience en développement Front-end & Back-end</span>
+                  <span>{frontendBackendExperience}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-900 mt-1">•</span>
-                  <span>Maîtrise des SIG et outils géomatiques</span>
+                  <span>{gisMastery}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-900 mt-1">•</span>
-                  <span>Polyvalent et adaptabilité rapide</span>
+                  <span>{versatileAdaptable}</span>
                 </li>
               </ul>
             </div>
@@ -287,9 +364,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
               {technicalSkills.map((skillCategory, index) => (
                 <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                    {skillCategory.category === 'Géomatique' ? (
+                    {skillCategory.category === geomaticsCategory ? (
                       <Map size={16} className="text-blue-900" />
-                    ) : skillCategory.category === 'Bases de données' ? (
+                    ) : skillCategory.category === databasesCategory ? (
                       <Database size={16} className="text-blue-900" />
                     ) : (
                       <Code size={16} className="text-blue-900" />
@@ -323,7 +400,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">{availability}</div>
-                  <div className="font-semibold text-green-900">Immédiate</div>
+                  <div className="font-semibold text-green-900">{immediateAvailability}</div>
                 </div>
               </div>
             </div>
@@ -334,7 +411,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                   <Award size={20} className="text-blue-900" />
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600">Certifications</div>
+                  <div className="text-sm text-gray-600">{certifications}</div>
                   <div className="font-semibold text-blue-900">DELF B2, NG Conservation, ...</div>
                 </div>
               </div>
@@ -347,7 +424,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div>
                   <div className="text-sm text-gray-600">{driverLicense}</div>
-                  <div className="font-semibold text-blue-900">Catégorie B</div>
+                  <div className="font-semibold text-blue-900">{categoryB}</div>
                 </div>
               </div>
             </div>
@@ -403,7 +480,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
           className="flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-900 to-blue-950 text-white rounded-lg font-semibold hover:from-blue-950 hover:to-blue-900 transition-all shadow-lg hover:shadow-xl flex-1 group"
         >
           <Mail size={20} className="group-hover:scale-110 transition-transform" />
-          <span>Contact direct</span>
+          <span>{contactDirect}</span>
         </a>
       </div>
     </div>
@@ -414,24 +491,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 z-[60] bg-white overflow-hidden">
       {/* Header importé avec hideMenu=true pour cacher les menus */}
       <Header hideMenu={true} />
-      
-      {/* Bouton retour en haut à gauche (flottant) */}
-      {/* <button 
-        onClick={handleBackToProfile}
-        className="fixed top-24 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm text-blue-900 rounded-lg shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-200 group"
-      >
-        <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-        <span className="font-medium">{backToProfile}</span>
-      </button> */}
-      
-      {/* Bouton fermer en haut à droite (flottant) */}
-      {/* <button 
-        onClick={onClose}
-        className="fixed top-24 right-6 z-50 p-3 bg-white/90 backdrop-blur-sm text-gray-700 rounded-full shadow-lg hover:bg-white hover:text-blue-900 hover:shadow-xl transition-all duration-300 border border-gray-200 group"
-        aria-label={closeModal}
-      >
-        <X size={24} className="group-hover:rotate-90 transition-transform" />
-      </button> */}
       
       {/* Conteneur principal pour AllProjectsPage avec décalage pour le Header */}
       <div className="h-full overflow-y-auto">
