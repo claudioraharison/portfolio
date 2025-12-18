@@ -12,6 +12,7 @@ import Experience from './components/Experience';
 import Contact from './components/Contact';
 
 // Styles et bibliothèques externes
+import SnowfallEffect from './components/SnowfallEffect';
 import './index.css';
 // import "slick-carousel/slick/slick.css"; 
 // import "slick-carousel/slick/slick-theme.css";
@@ -63,6 +64,7 @@ const App: React.FC = () => {
       <div className="App">
         {/* Passez la prop hideMenu au Header */}
         <Header hideMenu={isAllProjectsView} />
+        <SnowfallEffect />
         {isAllProjectsView ? allProjectsContent : homeContent}
       </div>
     </AutoTranslationProvider>
