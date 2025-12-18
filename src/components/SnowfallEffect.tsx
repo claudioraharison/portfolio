@@ -132,14 +132,26 @@ const SnowfallEffect: React.FC = () => {
         
         @media (max-width: 768px) {
           .snowflake {
-            opacity: 0.5 !important;
-            filter: blur(0.2px) !important;
+            /* CHANGEMENT : augmentation de l'opacité pour plus de visibilité */
+            opacity: 0.7 !important;
+            filter: blur(0.25px) !important;
           }
         }
         
         @media (max-width: 480px) {
           .snowflake {
-            display: none;
+            /* CHANGEMENT : augmentation significative de la visibilité */
+            opacity: 0.6 !important;
+            filter: blur(0.2px) !important;
+          }
+          
+          .snowflake::before {
+            opacity: 0.8 !important;
+            filter: blur(0.8px) !important;
+            box-shadow: 
+              0 0 6px rgba(25, 50, 100, 0.7),
+              0 0 10px rgba(20, 40, 80, 0.5),
+              inset 0 0 3px rgba(255, 255, 255, 0.6) !important;
           }
         }
         
