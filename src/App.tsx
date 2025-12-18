@@ -14,6 +14,7 @@ import Contact from './components/Contact';
 // Styles et bibliothèques externes
 import SnowfallEffect from './components/SnowfallEffect';
 import './index.css';
+import SimpleVisitorCounter from './components/SimpleVisitorCounter';
 // import "slick-carousel/slick/slick.css"; 
 // import "slick-carousel/slick/slick-theme.css";
 
@@ -51,6 +52,7 @@ const App: React.FC = () => {
       <Projects onViewAllClick={switchToAllProjects} />
       <Experience />
       <Contact />
+      <SimpleVisitorCounter />
     </>
   );
   
