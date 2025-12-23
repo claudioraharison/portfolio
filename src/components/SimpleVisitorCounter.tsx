@@ -127,7 +127,7 @@ const VisitorCounter: React.FC = () => {
 
       // Script d'authentification
       const authScript = document.createElement('script');
-      authScript.src = 'https://www.freevisitorcounters.com/auth.php?id=563a80eaad0b117ba239981c798eeb7dc387390d';
+      authScript.src = 'https://www.freevisitorcounters.com/auth.php?id=73865a55bbfd7a7049f0f5071c0c11849bc36027';
       authScript.async = true;
       
       authScript.onerror = () => {
@@ -136,7 +136,7 @@ const VisitorCounter: React.FC = () => {
 
       // Script du compteur
       const counterScript = document.createElement('script');
-      counterScript.src = 'https://www.freevisitorcounters.com/en/home/counter/1465825/t/0';
+      counterScript.src = 'https://www.freevisitorcounters.com/en/home/counter/1465853/t/0';
       counterScript.async = true;
       
       counterScript.onload = () => {
