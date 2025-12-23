@@ -1,45 +1,45 @@
 // components/VisitorCounter.tsx
 import React, { useEffect, useState, useRef } from 'react';
-import { Lock, Eye, RefreshCw, AlertCircle, Key, Shield } from 'lucide-react';
+import { Eye, RefreshCw, AlertCircle, Key, Shield } from 'lucide-react';
 import CryptoJS from 'crypto-js';
 
 const VisitorCounter: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [counterLoaded, setCounterLoaded] = useState(false);
+  // const [counterLoaded, setCounterLoaded] = useState(false);
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [loadingError, setLoadingError] = useState<string | null>(null);
-  const [fallbackData, setFallbackData] = useState<number | null>(null);
-  const [counterData, setCounterData] = useState<{ today: number; total: number } | null>(null);
-  const [counterType, setCounterType] = useState<'primary' | 'fallback' | 'local'>('local');
+  const [counterData, setCounterData] = useState<{ today: number; total: number }>({ today: 0, total: 590 });
+  const [counterType, setCounterType] = useState<'primary' | 'local'>('local');
   
-  const scriptsLoadedRef = useRef(false);
-  const safetyTimeoutRef = useRef<number | null>(null);
-  const counterCheckIntervalRef = useRef<number | null>(null);
-  const counterContainerRef = useRef<HTMLDivElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [iframeKey, setIframeKey] = useState(0);
+  const [isOnline, setIsOnline] = useState(true);
 
   const ENCRYPTED_PASSWORD_HASH = 'c9f69947af94021b86a1593f0e737a95071815cbe3767c1a9aacea0b0f7d7a10';
   const ENCRYPTION_KEY = 'visitor-counter-secret-key-2024';
 
+  // Vérifier la connexion internet
+  useEffect(() => {
+    setIsOnline(navigator.onLine);
+    
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const verifyPassword = (inputPassword: string): boolean => {
     try {
       const hashedInput = CryptoJS.SHA256(inputPassword).toString();
-      const isValid = hashedInput === ENCRYPTED_PASSWORD_HASH;
-      
-      if (typeof window !== 'undefined') {
-        const attempts = JSON.parse(localStorage.getItem('password_attempts') || '[]');
-        attempts.push({
-          timestamp: new Date().toISOString(),
-          success: isValid,
-          ipHash: CryptoJS.SHA256(window.navigator.userAgent).toString().substring(0, 16)
-        });
-        
-        if (attempts.length > 10) attempts.shift();
-        localStorage.setItem('password_attempts', JSON.stringify(attempts));
-      }
-      
-      return isValid;
+      return hashedInput === ENCRYPTED_PASSWORD_HASH;
     } catch (error) {
       console.error('Erreur vérification mot de passe:', error);
       return false;
@@ -55,290 +55,245 @@ const VisitorCounter: React.FC = () => {
       const bytes = CryptoJS.AES.decrypt(ciphertext, ENCRYPTION_KEY);
       return bytes.toString(CryptoJS.enc.Utf8) || '';
     } catch (error) {
-      console.error('Erreur déchiffrement:', error);
       return '';
     }
   };
 
+  // Charger les données locales
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const encryptedCount = localStorage.getItem('visitorCounter_encrypted');
-        if (encryptedCount) {
-          const decryptedCount = decryptData(encryptedCount);
-          if (decryptedCount) {
-            const count = parseInt(decryptedCount, 10);
-            if (!isNaN(count) && count > 0) {
-              setFallbackData(count);
-              return;
-            }
-          }
+    if (typeof window === 'undefined') return;
+
+    try {
+      // Charger le compteur total depuis localStorage
+      const savedTotal = localStorage.getItem('counter_total');
+      let total = 590; // Valeur par défaut
+      
+      if (savedTotal) {
+        const decrypted = decryptData(savedTotal);
+        if (decrypted) {
+          total = parseInt(decrypted, 10);
+        } else {
+          total = parseInt(savedTotal, 10);
         }
-        
-        const savedCount = localStorage.getItem('visitorCounter_fallback');
-        if (savedCount) {
-          const count = parseInt(savedCount, 10);
-          if (!isNaN(count) && count > 0) {
-            setFallbackData(count);
-            saveEncryptedCount(count);
-          }
-        }
-      } catch (error) {
-        console.error('Erreur chargement données:', error);
       }
+
+      // Charger les visites d'aujourd'hui
+      const todayKey = `counter_${new Date().toDateString()}`;
+      const savedToday = localStorage.getItem(todayKey);
+      let today = 0;
+      
+      if (savedToday) {
+        const decrypted = decryptData(savedToday);
+        today = decrypted ? parseInt(decrypted, 10) : parseInt(savedToday, 10);
+      }
+
+      // Incrémenter la visite actuelle
+      const sessionKey = 'counter_session_tracked';
+      if (!sessionStorage.getItem(sessionKey)) {
+        today += 1;
+        total += 1;
+        
+        // Sauvegarder
+        localStorage.setItem(todayKey, encryptData(today.toString()));
+        localStorage.setItem('counter_total', encryptData(total.toString()));
+        sessionStorage.setItem(sessionKey, 'true');
+      }
+
+      setCounterData({ today, total });
+    } catch (error) {
+      console.error('Erreur chargement données locales:', error);
     }
   }, []);
 
-  const saveEncryptedCount = (count: number) => {
-    try {
-      const encryptedCount = encryptData(count.toString());
-      localStorage.setItem('visitorCounter_encrypted', encryptedCount);
-      localStorage.setItem('visitorCounter_fallback', count.toString());
-    } catch (error) {
-      console.error('Erreur chiffrement données:', error);
-    }
-  };
-
-  const extractCounterValue = (): number | null => {
-    try {
-      // Chercher le compteur COUNTER-free dans le DOM
-      const counterElements = document.querySelectorAll(
-        '[id*="freevisitorcounters"], [src*="freevisitorcounters"], [href*="counters-free"], .counter, .visitor-counter'
-      );
-
-      for (const element of counterElements) {
-        // Chercher des nombres dans le texte
-        const text = element.textContent || element.innerHTML || '';
-        const matches = text.match(/\b\d{1,3}(?:,\d{3})*\b|\b\d+\b/g);
+  // Code HTML complet pour l'iframe
+  const counterHTML = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <style>
+        body {
+          margin: 0;
+          padding: 0;
+          background: transparent;
+          font-family: Arial, sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+        }
+        .counter-wrapper {
+          text-align: center;
+          padding: 10px;
+        }
+        .counter-link {
+          color: #3b82f6;
+          text-decoration: none;
+          font-size: 12px;
+          display: block;
+          margin-bottom: 10px;
+        }
+        .counter-link:hover {
+          text-decoration: underline;
+        }
+        .counter-value {
+          font-size: 32px;
+          font-weight: bold;
+          color: #1f2937;
+          margin: 10px 0;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .counter-label {
+          font-size: 12px;
+          color: #6b7280;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+        .loading {
+          color: #9ca3af;
+          font-size: 14px;
+        }
+        .error {
+          color: #ef4444;
+          font-size: 12px;
+          padding: 10px;
+          background: #fef2f2;
+          border-radius: 6px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="counter-wrapper">
+        <a href="https://www.counters-free.net/" class="counter-link" target="_blank">
+          COUNTER-free
+        </a>
         
-        if (matches) {
-          // Prendre le plus grand nombre (probablement le total)
-          const numbers = matches.map(m => parseInt(m.replace(/,/g, ''), 10))
-            .filter(n => !isNaN(n) && n > 0);
+        <div id="counter-display">
+          <div class="counter-value">590</div>
+          <div class="counter-label">Total visiteurs</div>
+        </div>
+        
+        <div id="counter-status" class="loading">
+          Chargement du compteur en ligne...
+        </div>
+      </div>
+
+      <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=05c831b43a1825360ddb2529f328ec4d66014b44'></script>
+      <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1465860/t/1"></script>
+      
+      <script>
+        // Surveiller les changements dans le DOM
+        let checkCount = 0;
+        const maxChecks = 20;
+        
+        function checkForCounter() {
+          checkCount++;
           
-          if (numbers.length > 0) {
-            const maxNumber = Math.max(...numbers);
-            console.log('Valeur compteur extraite:', maxNumber);
-            return maxNumber;
+          // Chercher des éléments avec des nombres
+          const allElements = document.body.getElementsByTagName('*');
+          let foundValue = null;
+          
+          for (let elem of allElements) {
+            const text = elem.textContent || '';
+            // Chercher des nombres de 3 chiffres ou plus
+            const matches = text.match(/\\b\\d{3,}\\b/g);
+            if (matches) {
+              for (let match of matches) {
+                const num = parseInt(match, 10);
+                if (num >= 100 && num <= 9999999) {
+                  foundValue = num;
+                  break;
+                }
+              }
+            }
+            if (foundValue) break;
           }
-        }
-      }
-
-      // Chercher dans les iframes
-      const iframes = document.querySelectorAll('iframe');
-      for (const iframe of iframes) {
-        try {
-          if (iframe.src.includes('freevisitorcounters') || iframe.src.includes('counter')) {
-            console.log('Iframe compteur trouvé:', iframe.src);
-            return extractRandomCount();
+          
+          if (foundValue) {
+            document.getElementById('counter-display').innerHTML = \`
+              <div class="counter-value">\${foundValue.toLocaleString()}</div>
+              <div class="counter-label">Total visiteurs</div>
+            \`;
+            document.getElementById('counter-status').innerHTML = \`
+              <div style="color: #10b981; font-size: 11px; margin-top: 5px;">
+                ✓ Compteur en ligne actif
+              </div>
+            \`;
+            
+            // Envoyer la valeur au parent
+            try {
+              window.parent.postMessage({
+                type: 'COUNTER_VALUE',
+                value: foundValue
+              }, '*');
+            } catch (e) {
+              console.log('Communication avec parent:', e);
+            }
+            
+            return true;
           }
-        } catch (e) {
-          // Ne pas accéder aux iframes cross-origin
-          continue;
+          
+          if (checkCount < maxChecks) {
+            setTimeout(checkForCounter, 500);
+          } else {
+            document.getElementById('counter-status').innerHTML = \`
+              <div class="error">
+                Compteur non détecté. Affichage des données locales.
+              </div>
+            \`;
+          }
+          return false;
         }
-      }
-
-      return null;
-    } catch (error) {
-      console.error('Erreur extraction valeur compteur:', error);
-      return null;
-    }
-  };
-
-  const extractRandomCount = (): number => {
-    // Générer un nombre réaliste basé sur le timestamp
-    const base = 15000 + Math.floor(Date.now() / 100000);
-    const variation = Math.floor(Math.random() * 1000);
-    return base + variation;
-  };
-
-  const loadCounter = () => {
-    try {
-      console.log('🚀 Début chargement COUNTER-free...');
-      setLoadingError(null);
-      setCounterData(null);
-      setCounterType('local');
-      
-      // Nettoyer anciens scripts
-      document.querySelectorAll('script[src*="freevisitorcounters"]').forEach(s => s.remove());
-      scriptsLoadedRef.current = false;
-
-      // Vérifier si déjà chargé
-      if (document.querySelector('script[src*="05c831b43a1825360ddb2529f328ec4d66014b44"]')) {
-        console.log('✅ Scripts déjà chargés');
-        startCounterMonitoring();
-        return;
-      }
-
-      // Script 1: Authentification
-      const authScript = document.createElement('script');
-      authScript.src = 'https://www.freevisitorcounters.com/auth.php?id=05c831b43a1825360ddb2529f328ec4d66014b44';
-      authScript.async = true;
-      authScript.type = 'text/javascript';
-      authScript.crossOrigin = 'anonymous';
-      
-      authScript.onload = () => {
-        console.log('✅ Script auth chargé');
-      };
-      
-      authScript.onerror = (error) => {
-        console.error('❌ Erreur script auth:', error);
-      };
-
-      // Script 2: Compteur principal
-      const counterScript = document.createElement('script');
-      counterScript.src = 'https://www.freevisitorcounters.com/en/home/counter/1465860/t/1';
-      counterScript.async = true;
-      counterScript.type = 'text/javascript';
-      counterScript.crossOrigin = 'anonymous';
-      
-      counterScript.onload = () => {
-        console.log('✅ Script compteur chargé');
-        scriptsLoadedRef.current = true;
-        setCounterType('primary');
-        startCounterMonitoring();
-      };
-      
-      counterScript.onerror = (error) => {
-        console.error('❌ Erreur script compteur:', error);
-        scriptsLoadedRef.current = false;
-        setCounterType('fallback');
-        setTimeout(fallbackToLocalStorage, 2000);
-      };
-
-      // Ajouter les scripts au DOM
-      document.head.appendChild(authScript);
-      document.head.appendChild(counterScript);
-
-      // Créer un conteneur pour le compteur si nécessaire
-      if (!document.getElementById('counter-free-container')) {
-        const container = document.createElement('div');
-        container.id = 'counter-free-container';
-        container.style.cssText = 'position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;';
-        document.body.appendChild(container);
-      }
-
-      // Timeout de sécurité
-      safetyTimeoutRef.current = window.setTimeout(() => {
-        console.log('⏱️ Timeout sécurité atteint');
-        if (!scriptsLoadedRef.current) {
-          fallbackToLocalStorage();
-        }
-      }, 10000);
-
-    } catch (err) {
-      console.error('❌ Erreur loadCounter:', err);
-      fallbackToLocalStorage();
-    }
-  };
-
-  const startCounterMonitoring = () => {
-    if (counterCheckIntervalRef.current) {
-      clearInterval(counterCheckIntervalRef.current);
-    }
-
-    counterCheckIntervalRef.current = window.setInterval(() => {
-      const counterValue = extractCounterValue();
-      
-      if (counterValue) {
-        console.log('📊 Valeur compteur détectée:', counterValue);
         
-        // Mettre à jour les données
-        const todayCount = Math.floor(Math.random() * 50) + 1;
-        const totalCount = counterValue;
+        // Démarrer la vérification après chargement
+        setTimeout(checkForCounter, 1000);
         
-        setCounterData({
-          today: todayCount,
-          total: totalCount
+        // Écouter les messages du parent
+        window.addEventListener('message', function(event) {
+          if (event.data.type === 'REQUEST_COUNTER_VALUE') {
+            checkForCounter();
+          }
         });
-        
-        setCounterLoaded(true);
-        setLoadingError(null);
-        
-        // Sauvegarder en local
-        saveEncryptedCount(totalCount);
-        setFallbackData(totalCount);
-        
-        // Arrêter la surveillance
-        if (counterCheckIntervalRef.current) {
-          clearInterval(counterCheckIntervalRef.current);
-          counterCheckIntervalRef.current = null;
-        }
-        
-        // Nettoyer le timeout
-        if (safetyTimeoutRef.current !== null) {
-          clearTimeout(safetyTimeoutRef.current);
-          safetyTimeoutRef.current = null;
-        }
-      } else {
-        // Après 15 secondes, basculer en mode local si rien trouvé
-        setTimeout(() => {
-          if (!counterData) {
-            console.log('🔄 Basculer vers mode local après timeout');
-            fallbackToLocalStorage();
-          }
-        }, 15000);
-      }
-    }, 1000);
-  };
+      </script>
+    </body>
+    </html>
+  `;
 
-  const fallbackToLocalStorage = () => {
-    console.log('🔄 Activation mode local');
-    
-    if (counterCheckIntervalRef.current) {
-      clearInterval(counterCheckIntervalRef.current);
-      counterCheckIntervalRef.current = null;
-    }
-    
-    if (safetyTimeoutRef.current !== null) {
-      clearTimeout(safetyTimeoutRef.current);
-      safetyTimeoutRef.current = null;
-    }
-    
-    if (typeof window !== 'undefined' && !sessionStorage.getItem('counter_viewed')) {
-      const currentCount = fallbackData || extractRandomCount();
-      const newCount = currentCount + 1;
-      
-      saveEncryptedCount(newCount);
-      setFallbackData(newCount);
-      sessionStorage.setItem('counter_viewed', 'true');
-      
-      setCounterData({
-        today: Math.floor(Math.random() * 20) + 1,
-        total: newCount
-      });
-      
-      setCounterType('local');
-    } else if (fallbackData) {
-      setCounterData({
-        today: Math.floor(Math.random() * 5) + 1,
-        total: fallbackData
-      });
-      setCounterType('local');
-    }
-    
-    setLoadingError('Connexion au serveur limitée. Affichage des données locales.');
-    setCounterLoaded(true);
-  };
-
+  // Écouter les messages de l'iframe
   useEffect(() => {
-    if (!isVisible) return;
-
-    const timer = window.setTimeout(loadCounter, 100);
-    
-    return () => {
-      clearTimeout(timer);
-      if (safetyTimeoutRef.current !== null) {
-        clearTimeout(safetyTimeoutRef.current);
-        safetyTimeoutRef.current = null;
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'COUNTER_VALUE') {
+        const onlineValue = event.data.value;
+        if (onlineValue && onlineValue !== counterData.total) {
+          console.log('Valeur compteur en ligne reçue:', onlineValue);
+          setCounterData(prev => ({
+            today: prev.today,
+            total: onlineValue
+          }));
+          setCounterType('primary');
+          setLoadingError(null);
+          
+          // Sauvegarder la valeur en ligne comme référence
+          localStorage.setItem('counter_online_reference', onlineValue.toString());
+        }
       }
-      if (counterCheckIntervalRef.current) {
-        clearInterval(counterCheckIntervalRef.current);
-        counterCheckIntervalRef.current = null;
-      }
-      scriptsLoadedRef.current = false;
     };
-  }, [isVisible]);
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [counterData.total]);
+
+  // Demander la valeur à l'iframe
+  const requestCounterValue = () => {
+    if (iframeRef.current) {
+      iframeRef.current.contentWindow?.postMessage({
+        type: 'REQUEST_COUNTER_VALUE'
+      }, '*');
+    }
+  };
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -347,14 +302,12 @@ const VisitorCounter: React.FC = () => {
         setShowPasswordInput(true);
         setPassword('');
         setError('');
-        sessionStorage.removeItem('failed_attempts');
       }
       if (e.key === 'Escape') {
         if (showPasswordInput) {
           setShowPasswordInput(false);
           setPassword('');
           setError('');
-          sessionStorage.removeItem('failed_attempts');
         } else {
           setIsVisible(false);
         }
@@ -368,81 +321,39 @@ const VisitorCounter: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const failedAttempts = sessionStorage.getItem('failed_attempts') || '0';
-    if (parseInt(failedAttempts) >= 3) {
-      setError('Trop de tentatives échouées. Réessayez dans 30 secondes.');
-      return;
-    }
-    
     if (verifyPassword(password)) {
       setIsVisible(true);
       setShowPasswordInput(false);
       setPassword('');
       setError('');
-      sessionStorage.removeItem('failed_attempts');
-      console.log('🔓 Accès autorisé', new Date().toLocaleTimeString());
+      console.log('🔓 Accès autorisé');
     } else {
-      const newAttempts = parseInt(failedAttempts) + 1;
-      sessionStorage.setItem('failed_attempts', newAttempts.toString());
-      
-      if (newAttempts >= 3) {
-        setError('Trop de tentatives échouées. Réessayez dans 30 secondes.');
-        setTimeout(() => {
-          sessionStorage.removeItem('failed_attempts');
-          console.log('🔓 Compte débloqué après 30 secondes');
-        }, 30000);
-      } else {
-        setError(`Mot de passe incorrect (${3 - newAttempts} tentative(s) restante(s))`);
-      }
-      
+      setError('Mot de passe incorrect');
       setPassword('');
     }
   };
 
   const handleClose = () => {
     setIsVisible(false);
-    document.querySelectorAll('script[src*="freevisitorcounters"]').forEach(s => s.remove());
-    
-    if (safetyTimeoutRef.current !== null) {
-      clearTimeout(safetyTimeoutRef.current);
-      safetyTimeoutRef.current = null;
-    }
-    
-    if (counterCheckIntervalRef.current) {
-      clearInterval(counterCheckIntervalRef.current);
-      counterCheckIntervalRef.current = null;
-    }
-    
-    setCounterLoaded(false);
-    setLoadingError(null);
-    setCounterData(null);
   };
 
   const handleRetry = () => {
-    setCounterLoaded(false);
-    setLoadingError(null);
-    setCounterData(null);
-    loadCounter();
+    setIframeKey(prev => prev + 1);
+    setLoadingError('Rechargement du compteur...');
+    
+    setTimeout(() => {
+      requestCounterValue();
+    }, 1000);
   };
 
   if (!isVisible && !showPasswordInput) return null;
 
   const getCounterBadgeColor = () => {
-    switch (counterType) {
-      case 'primary': return '#10b981'; // Vert
-      case 'fallback': return '#3b82f6'; // Bleu
-      case 'local': return '#f59e0b'; // Orange
-      default: return '#6b7280';
-    }
+    return counterType === 'primary' ? '#10b981' : '#f59e0b';
   };
 
   const getCounterBadgeText = () => {
-    switch (counterType) {
-      case 'primary': return '🔐 COUNTER-free';
-      case 'fallback': return '🔄 Mode backup';
-      case 'local': return '💾 Données locales';
-      default: return 'Statistiques';
-    }
+    return counterType === 'primary' ? '🔐 En ligne' : '💾 Local';
   };
 
   return (
@@ -478,7 +389,7 @@ const VisitorCounter: React.FC = () => {
             }}>
               <Shield size={24} />
               <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>
-                Accès sécurisé COUNTER-free
+                Accès sécurisé
               </h3>
             </div>
 
@@ -500,8 +411,6 @@ const VisitorCounter: React.FC = () => {
                     boxSizing: 'border-box'
                   }}
                   autoFocus
-                  onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                 />
                 <Key 
                   size={16} 
@@ -544,7 +453,6 @@ const VisitorCounter: React.FC = () => {
                     setShowPasswordInput(false);
                     setPassword('');
                     setError('');
-                    sessionStorage.removeItem('failed_attempts');
                   }}
                   style={{
                     padding: '10px 20px',
@@ -569,11 +477,8 @@ const VisitorCounter: React.FC = () => {
                     borderRadius: '8px',
                     cursor: 'pointer',
                     fontSize: '14px',
-                    fontWeight: '500',
-                    transition: 'background-color 0.3s'
+                    fontWeight: '500'
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#3b82f6'}
                 >
                   Confirmer
                 </button>
@@ -645,205 +550,116 @@ const VisitorCounter: React.FC = () => {
             border: '1px solid #e5e7eb',
             borderTop: 'none'
           }}>
-            {!counterLoaded ? (
-              <div style={{ textAlign: 'center', padding: '20px' }}>
-                <div style={{ 
-                  display: 'inline-block',
-                  width: '30px',
-                  height: '30px',
-                  border: '3px solid #f3f3f3',
-                  borderTop: '3px solid #3b82f6',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite',
-                  marginBottom: '15px'
-                }} />
-                <p style={{ margin: 0, color: '#6b7280' }}>
-                  Connexion à COUNTER-free...
-                </p>
-              </div>
-            ) : (
-              <div ref={counterContainerRef}>
-                {loadingError && (
-                  <div style={{
-                    padding: '15px',
-                    backgroundColor: '#fef2f2',
-                    borderRadius: '8px',
-                    marginBottom: '15px',
-                    border: '1px solid #fecaca'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <AlertCircle size={16} color="#dc2626" />
-                      <span style={{ color: '#dc2626', fontSize: '14px', fontWeight: '500' }}>
-                        {counterType === 'local' ? 'Mode local activé' : 'Connexion limitée'}
-                      </span>
-                    </div>
-                    <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>
-                      {loadingError}
-                    </p>
-                  </div>
-                )}
-
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <div style={{ textAlign: 'center' }}>
-                  {counterData ? (
-                    <>
-                      <div style={{ display: 'flex', justifyContent: 'space-around', marginBottom: '20px' }}>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{
-                            fontSize: '24px',
-                            fontWeight: 'bold',
-                            color: '#3b82f6',
-                            marginBottom: '4px'
-                          }}>
-                            {counterData.today.toLocaleString()}
-                          </div>
-                          <div style={{
-                            fontSize: '12px',
-                            color: '#6b7280',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.5px'
-                          }}>
-                            Aujourd'hui
-                          </div>
-                        </div>
-                        <div style={{ textAlign: 'center' }}>
-                          <div style={{
-                            fontSize: '32px',
-                            fontWeight: 'bold',
-                            color: '#1f2937',
-                            marginBottom: '4px',
-                            background: counterType === 'primary' 
-                              ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                              : counterType === 'fallback'
-                              ? 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'
-                              : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent'
-                          }}>
-                            {counterData.total.toLocaleString()}
-                          </div>
-                          <div style={{
-                            fontSize: '12px',
-                            color: '#6b7280',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.5px'
-                          }}>
-                            Total visiteurs
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div style={{
-                        marginTop: '10px',
-                        padding: '8px',
-                        backgroundColor: counterType === 'primary' ? '#f0f9ff' : 
-                                       counterType === 'fallback' ? '#eff6ff' : '#fffbeb',
-                        borderRadius: '6px',
-                        fontSize: '11px',
-                        color: counterType === 'primary' ? '#0369a1' :
-                               counterType === 'fallback' ? '#1e40af' : '#92400e'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                          {counterType === 'primary' ? (
-                            <>
-                              <Eye size={10} />
-                              <span>Live tracking avec COUNTER-free</span>
-                            </>
-                          ) : counterType === 'fallback' ? (
-                            <>
-                              <RefreshCw size={10} />
-                              <span>Données de secours chargées</span>
-                            </>
-                          ) : (
-                            <>
-                              <Lock size={10} />
-                              <span>Données locales sécurisées</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  ) : fallbackData !== null ? (
-                    <>
-                      <div style={{ marginBottom: '15px' }}>
-                        <div style={{
-                          fontSize: '42px',
-                          fontWeight: 'bold',
-                          color: '#1f2937',
-                          marginBottom: '5px',
-                          letterSpacing: '2px',
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent'
-                        }}>
-                          {fallbackData.toLocaleString()}
-                        </div>
-                        <div style={{
-                          fontSize: '14px',
-                          color: '#6b7280',
-                          textTransform: 'uppercase',
-                          letterSpacing: '1px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '6px'
-                        }}>
-                          <Lock size={12} />
-                          Visiteurs sécurisés
-                        </div>
-                      </div>
-                    </>
-                  ) : null}
+                  <div style={{
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    color: '#3b82f6',
+                    marginBottom: '4px'
+                  }}>
+                    {counterData.today}
+                  </div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    textTransform: 'uppercase'
+                  }}>
+                    Aujourd'hui
+                  </div>
                 </div>
-
-                <div style={{ 
-                  minHeight: '20px',
-                  marginTop: '15px',
-                  padding: '10px',
-                  backgroundColor: '#f9fafb',
-                  borderRadius: '6px',
-                  fontSize: '11px',
-                  color: '#6b7280',
-                  textAlign: 'center'
-                }}>
-                  {counterType === 'primary' ? (
-                    'Données fournies par freevisitorcounters.com'
-                  ) : (
-                    'Données protégées par chiffrement AES-256'
-                  )}
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{
+                    fontSize: '32px',
+                    fontWeight: 'bold',
+                    color: '#1f2937',
+                    marginBottom: '4px',
+                    background: counterType === 'primary' 
+                      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                      : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  }}>
+                    {counterData.total.toLocaleString()}
+                  </div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#6b7280',
+                    textTransform: 'uppercase'
+                  }}>
+                    Total
+                  </div>
                 </div>
+              </div>
+            </div>
 
-                <div style={{ textAlign: 'center', marginTop: '15px' }}>
-                  <button
-                    onClick={handleRetry}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '8px 16px',
-                      backgroundColor: '#f3f4f6',
-                      color: '#4b5563',
-                      border: 'none',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      transition: 'all 0.3s'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = '#e5e7eb';
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f3f4f6';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
-                  >
-                    <RefreshCw size={14} />
-                    Recharger les données
-                  </button>
+            {/* Iframe invisible pour charger le compteur */}
+            <div style={{ display: 'none' }}>
+              <iframe
+                key={iframeKey}
+                ref={iframeRef}
+                srcDoc={counterHTML}
+                title="Counter Free"
+                sandbox="allow-scripts allow-same-origin"
+                onLoad={() => {
+                  setTimeout(requestCounterValue, 2000);
+                }}
+              />
+            </div>
+
+            {!isOnline && (
+              <div style={{
+                padding: '10px',
+                backgroundColor: '#fef2f2',
+                borderRadius: '6px',
+                marginBottom: '15px',
+                textAlign: 'center'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <AlertCircle size={14} color="#dc2626" />
+                  <span style={{ color: '#dc2626', fontSize: '12px' }}>
+                    Hors ligne - Données locales affichées
+                  </span>
                 </div>
               </div>
             )}
+
+            {loadingError && (
+              <div style={{
+                padding: '10px',
+                backgroundColor: '#fef2f2',
+                borderRadius: '6px',
+                marginBottom: '15px',
+                textAlign: 'center'
+              }}>
+                <span style={{ color: '#dc2626', fontSize: '12px' }}>
+                  {loadingError}
+                </span>
+              </div>
+            )}
+
+            <div style={{ textAlign: 'center', marginTop: '15px' }}>
+              <button
+                onClick={handleRetry}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '8px 16px',
+                  backgroundColor: '#f3f4f6',
+                  color: '#4b5563',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: '500'
+                }}
+              >
+                <RefreshCw size={14} />
+                Synchroniser avec serveur
+              </button>
+            </div>
 
             <div style={{
               marginTop: '15px',
@@ -861,11 +677,8 @@ const VisitorCounter: React.FC = () => {
                   textDecoration: 'none',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '4px',
-                  transition: 'color 0.3s'
+                  gap: '4px'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.color = '#3b82f6'}
-                onMouseOut={(e) => e.currentTarget.style.color = '#6b7280'}
               >
                 <Shield size={10} />
                 Powered by COUNTER-free
@@ -878,16 +691,11 @@ const VisitorCounter: React.FC = () => {
               color: '#9ca3af',
               textAlign: 'center'
             }}>
-              Ctrl+Shift+V pour afficher • ESC pour fermer
+              {counterType === 'primary' 
+                ? '✓ Données synchronisées en temps réel'
+                : '⚠️ Utilisation des données locales'}
             </div>
           </div>
-
-          <style>{`
-            @keyframes spin {
-              0% { transform: rotate(0deg); }
-              100% { transform: rotate(360deg); }
-            }
-          `}</style>
         </div>
       )}
     </>
