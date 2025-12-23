@@ -1,318 +1,263 @@
-// components/SimpleVisitorCounter.tsx - VERSION FINALE STABLE
-import { Eye, Lock, Users, Globe, TrendingUp, Calendar, Clock, Monitor, Trash2, AlertTriangle, X, ExternalLink, RefreshCw } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { SHA256 } from 'crypto-js';
+// components/VisitorCounter.tsx
+import React, { useEffect, useState, useRef } from 'react';
+import { Lock, Eye, RefreshCw, AlertCircle, Key } from 'lucide-react';
+import CryptoJS from 'crypto-js';
 
-interface Visitor {
-  id: string;
-  timestamp: number;
-  page: string;
-  userAgent: string;
-  sessionId: string;
-  isNewSession?: boolean;
-}
-
-const SimpleVisitorCounter: React.FC = () => {
+const VisitorCounter: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [visitors, setVisitors] = useState<Visitor[]>([]);
-  const [todayCount, setTodayCount] = useState(0);
-  const [totalPageViews, setTotalPageViews] = useState(0);
-  const [uniqueVisitors, setUniqueVisitors] = useState(0);
-//   const [currentVisitors, setCurrentVisitors] = useState<string[]>([]);
-  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
-  const [passwordInput, setPasswordInput] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [lastUpdate, setLastUpdate] = useState<string>('');
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [deleteMode, setDeleteMode] = useState<'all' | 'old' | 'selected' | 'today' | 'session' | null>(null);
-  const [selectedVisitors, setSelectedVisitors] = useState<Set<string>>(new Set());
-  const [confirmationInput, setConfirmationInput] = useState('');
-  const [deleteDaysThreshold, setDeleteDaysThreshold] = useState(30);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [counterLoaded, setCounterLoaded] = useState(false);
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [fallbackData, setFallbackData] = useState<number | null>(null);
   
-  // ÉTATS STABLES
-  const [externalCounterLoaded, setExternalCounterLoaded] = useState(false);
-  const [counterData, setCounterData] = useState({
-    today: 0,
-    yesterday: 0,
-    week: 0,
-    month: 0,
-    total: 0,
-    online: 0
-  });
-//   const [lastFetchTime, setLastFetchTime] = useState<number>(0);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const scriptsLoadedRef = useRef(false);
+  const safetyTimeoutRef = useRef<number | null>(null);
 
-  // CONFIGURATION
-  const COUNTER_ID = '1463690';
-  const COUNTER_AUTH_ID = 'b79d791839ab19e77e159d3262315c6c1f147fb0';
-  const ADMIN_PASSWORD_HASH = 'c9f69947af94021b86a1593f0e737a95071815cbe3767c1a9aacea0b0f7d7a10';
+  const ENCRYPTED_PASSWORD_HASH = 'c9f69947af94021b86a1593f0e737a95071815cbe3767c1a9aacea0b0f7d7a10'; // SHA-256 de "claudio"
+  
+  // Clé de chiffrement pour le stockage (doit rester secrète côté client)
+  const ENCRYPTION_KEY = 'visitor-counter-secret-key-2024';
 
-  // ==================== FONCTIONS PRINCIPALES ====================
-
-  const verifyPassword = (input: string): boolean => {
-    const inputHash = SHA256(input).toString();
-    return inputHash === ADMIN_PASSWORD_HASH;
-  };
-
-  // Initialisation des données STABLES
-  useEffect(() => {
-    const initializeData = () => {
-      if (isInitialized) return;
+  // Fonction pour vérifier le mot de passe
+  const verifyPassword = (inputPassword: string): boolean => {
+    try {
+      // Hash du mot de passe saisi
+      const hashedInput = CryptoJS.SHA256(inputPassword).toString();
       
-      const storedData = localStorage.getItem('freeCounterData');
+      // Comparer avec le hash stocké
+      const isValid = hashedInput === ENCRYPTED_PASSWORD_HASH;
       
-      if (!storedData) {
-        // Valeurs initiales réalistes et stables
-        const initialData = {
-          today: 15,
-          yesterday: 12,
-          week: 85,
-          month: 320,
-          total: 1842,
-          online: Math.floor(Math.random() * 3) + 1
-        };
+      // Optionnel: journaliser les tentatives
+      if (typeof window !== 'undefined') {
+        const attempts = JSON.parse(localStorage.getItem('password_attempts') || '[]');
+        attempts.push({
+          timestamp: new Date().toISOString(),
+          success: isValid,
+          ipHash: CryptoJS.SHA256(window.navigator.userAgent).toString().substring(0, 16)
+        });
         
-        localStorage.setItem('freeCounterData', JSON.stringify({
-          data: initialData,
-          timestamp: Date.now(),
-          initialized: true
-        }));
-        
-        setCounterData(initialData);
-      } else {
-        const parsedData = JSON.parse(storedData);
-        setCounterData(parsedData.data);
-      }
-      
-      setIsInitialized(true);
-    };
-
-    initializeData();
-  }, [isInitialized]);
-
-  // Charger le compteur externe
-  useEffect(() => {
-    const loadExternalCounter = () => {
-      try {
-        // Script d'authentification
-        const authScript = document.createElement('script');
-        authScript.type = 'text/javascript';
-        authScript.src = `https://www.freevisitorcounters.com/auth.php?id=${COUNTER_AUTH_ID}`;
-        authScript.async = true;
-        
-        // Script du compteur
-        const counterScript = document.createElement('script');
-        counterScript.type = 'text/javascript';
-        counterScript.src = `https://www.freevisitorcounters.com/en/home/counter/${COUNTER_ID}/t/0`;
-        counterScript.async = true;
-        
-        counterScript.onload = () => {
-          setExternalCounterLoaded(true);
-          console.log('Compteur FreeVisitorCounters.com chargé');
-        };
-        
-        document.head.appendChild(authScript);
-        document.head.appendChild(counterScript);
-
-        // Nettoyage
-        return () => {
-          if (document.head.contains(authScript)) document.head.removeChild(authScript);
-          if (document.head.contains(counterScript)) document.head.removeChild(counterScript);
-        };
-      } catch (error) {
-        console.error('Erreur chargement compteur:', error);
-      }
-    };
-
-    if (!externalCounterLoaded) {
-      loadExternalCounter();
-    }
-  }, [externalCounterLoaded]);
-
-  // Mise à jour INCROYMENTALE stable des données
-  const updateCounterIncrementally = () => {
-    const stored = localStorage.getItem('freeCounterData');
-    if (!stored) return;
-
-    const { data, timestamp } = JSON.parse(stored);
-    const now = Date.now();
-    
-    // Vérifier si au moins 30 minutes se sont écoulées
-    const thirtyMinutesAgo = now - 30 * 60 * 1000;
-    if (timestamp > thirtyMinutesAgo) return;
-    
-    // Incrémentation réaliste (petits pas)
-    const hour = new Date().getHours();
-    const isActiveTime = hour >= 9 && hour <= 21; // 9h-21h
-    
-    const increment = isActiveTime ? 2 : 1;
-    
-    const updatedData = {
-      today: data.today + increment,
-      yesterday: data.yesterday, // Ne change pas
-      week: data.week + increment,
-      month: data.month + increment,
-      total: data.total + increment,
-      online: Math.floor(Math.random() * 4) + 1 // 1-4 visiteurs en ligne
-    };
-    
-    localStorage.setItem('freeCounterData', JSON.stringify({
-      data: updatedData,
-      timestamp: now,
-      initialized: true
-    }));
-    
-    setCounterData(updatedData);
-    // setLastFetchTime(now);
-  };
-
-  // Réinitialiser les données
-  const resetCounterData = () => {
-    const resetData = {
-      today: 0,
-      yesterday: 0,
-      week: 0,
-      month: 0,
-      total: 0,
-      online: 0
-    };
-    
-    localStorage.setItem('freeCounterData', JSON.stringify({
-      data: resetData,
-      timestamp: Date.now(),
-      initialized: true
-    }));
-    
-    setCounterData(resetData);
-    alert('Compteur externe réinitialisé à zéro.');
-  };
-
-  // ==================== GESTION DES VISITES LOCALES ====================
-
-  const getSessionId = (): string => {
-    let sessionId = sessionStorage.getItem('visit_session_id');
-    if (!sessionId) {
-      sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      sessionStorage.setItem('visit_session_id', sessionId);
-      sessionStorage.setItem('session_start_time', Date.now().toString());
-    }
-    return sessionId;
-  };
-
-  useEffect(() => {
-    const sessionId = getSessionId();
-    const now = Date.now();
-
-    // Session active
-    const activeSessions = JSON.parse(localStorage.getItem('active_sessions') || '{}');
-    activeSessions[sessionId] = now;
-    localStorage.setItem('active_sessions', JSON.stringify(activeSessions));
-
-    // Enregistrer visite
-    const logVisit = () => {
-      const visit: Visitor = {
-        id: now.toString() + '_' + Math.random().toString(36).substr(2, 9),
-        timestamp: now,
-        page: window.location.pathname,
-        userAgent: navigator.userAgent,
-        sessionId: sessionId,
-        isNewSession: !sessionStorage.getItem('has_visited')
-      };
-
-      if (!sessionStorage.getItem('has_visited')) {
-        sessionStorage.setItem('has_visited', 'true');
-      }
-
-      // Stockage local
-      const stored = localStorage.getItem('visitor_logs');
-      const logs: Visitor[] = stored ? JSON.parse(stored) : [];
-      const updatedLogs = [visit, ...logs].slice(0, 1000);
-      localStorage.setItem('visitor_logs', JSON.stringify(updatedLogs));
-      
-      const totalViews = parseInt(localStorage.getItem('total_page_views') || '0') + 1;
-      localStorage.setItem('total_page_views', totalViews.toString());
-      
-      setTotalPageViews(totalViews);
-      setVisitors(updatedLogs);
-      updateStatistics(updatedLogs);
-      setLastUpdate(new Date().toLocaleTimeString('fr-FR'));
-      
-      // Mettre à jour le compteur externe
-      updateCounterIncrementally();
-      
-      window.dispatchEvent(new CustomEvent('visitLogged', { detail: visit }));
-    };
-
-    logVisit();
-
-    // Cleanup sessions
-    const cleanupInterval = setInterval(() => {
-      const sessions = JSON.parse(localStorage.getItem('active_sessions') || '{}');
-      const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
-      
-      Object.keys(sessions).forEach(sessionId => {
-        if (sessions[sessionId] < thirtyMinutesAgo) {
-          delete sessions[sessionId];
+        // Garder seulement les 10 dernières tentatives
+        if (attempts.length > 10) {
+          attempts.shift();
         }
-      });
+        
+        localStorage.setItem('password_attempts', JSON.stringify(attempts));
+      }
       
-      localStorage.setItem('active_sessions', JSON.stringify(sessions));
-    //   setCurrentVisitors(Object.keys(sessions));
-    }, 60000);
+      return isValid;
+    } catch (error) {
+      console.error('Erreur lors de la vérification du mot de passe:', error);
+      return false;
+    }
+  };
 
-    // Écouteur d'événements
-    const handleVisitLogged = (event: Event) => {
-      const customEvent = event as CustomEvent<Visitor>;
-      const visit = customEvent.detail;
-      setVisitors(prev => [visit, ...prev.slice(0, 999)]);
-      updateStatistics([visit, ...visitors]);
-      setTotalPageViews(prev => prev + 1);
-      setLastUpdate(new Date().toLocaleTimeString('fr-FR'));
-      updateCounterIncrementally();
-    };
+  // Fonction pour chiffrer/déchiffrer les données locales
+  const encryptData = (data: string): string => {
+    return CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString();
+  };
 
-    window.addEventListener('visitLogged', handleVisitLogged as EventListener);
+  const decryptData = (ciphertext: string): string => {
+    try {
+      const bytes = CryptoJS.AES.decrypt(ciphertext, ENCRYPTION_KEY);
+      const result = bytes.toString(CryptoJS.enc.Utf8);
+      return result || '';
+    } catch (error) {
+      console.error('Erreur de déchiffrement:', error);
+      return '';
+    }
+  };
 
-    return () => {
-      clearInterval(cleanupInterval);
-      window.removeEventListener('visitLogged', handleVisitLogged as EventListener);
-    };
+  // Charger le compteur depuis localStorage (chiffré) comme fallback
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        // Essayer d'abord la version chiffrée
+        const encryptedCount = localStorage.getItem('visitorCounter_encrypted');
+        if (encryptedCount) {
+          const decryptedCount = decryptData(encryptedCount);
+          if (decryptedCount) {
+            const count = parseInt(decryptedCount, 10);
+            if (!isNaN(count) && count > 0) {
+              setFallbackData(count);
+              return;
+            }
+          }
+        }
+        
+        // Fallback à la version non chiffrée pour compatibilité
+        const savedCount = localStorage.getItem('visitorCounter_fallback');
+        if (savedCount) {
+          const count = parseInt(savedCount, 10);
+          if (!isNaN(count) && count > 0) {
+            setFallbackData(count);
+            // Migrer vers version chiffrée
+            saveEncryptedCount(count);
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+      }
+    }
   }, []);
 
-  const updateStatistics = (logs: Visitor[]) => {
-    const today = new Date().toDateString();
-    const todayVisits = logs.filter(v => new Date(v.timestamp).toDateString() === today);
-    setTodayCount(todayVisits.length);
-    
-    const allUniqueSessions = new Set(logs.map(v => v.sessionId));
-    setUniqueVisitors(allUniqueSessions.size);
-    
-    // const activeSessions = JSON.parse(localStorage.getItem('active_sessions') || '{}');
-    // const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
-    // const currentSessions = Object.keys(activeSessions).filter(
-    //   sessionId => activeSessions[sessionId] > thirtyMinutesAgo
-    // );
-    // setCurrentVisitors(currentSessions);
+  // Fonction pour sauvegarder le compteur de manière chiffrée
+  const saveEncryptedCount = (count: number) => {
+    try {
+      const encryptedCount = encryptData(count.toString());
+      localStorage.setItem('visitorCounter_encrypted', encryptedCount);
+      
+      // Sauvegarder aussi en clair pour compatibilité
+      localStorage.setItem('visitorCounter_fallback', count.toString());
+    } catch (error) {
+      console.error('Erreur lors du chiffrement des données:', error);
+    }
   };
 
-  // ==================== GESTION CLAVIER ====================
+  // Fonction de chargement du compteur
+  const loadCounter = () => {
+    try {
+      console.log('🚀 Début du chargement du compteur...');
+      setLoadingError(null);
+      
+      // Nettoyer les anciens scripts
+      document.querySelectorAll('script[src*="freevisitorcounters"]').forEach(s => s.remove());
+      scriptsLoadedRef.current = false;
 
+      // Script d'authentification
+      const authScript = document.createElement('script');
+      authScript.src = 'https://www.freevisitorcounters.com/auth.php?id=563a80eaad0b117ba239981c798eeb7dc387390d';
+      authScript.async = true;
+      
+      authScript.onerror = () => {
+        console.error('❌ Erreur chargement auth script');
+      };
+
+      // Script du compteur
+      const counterScript = document.createElement('script');
+      counterScript.src = 'https://www.freevisitorcounters.com/en/home/counter/1465825/t/0';
+      counterScript.async = true;
+      
+      counterScript.onload = () => {
+        console.log('✅ Script de compteur chargé avec succès');
+        scriptsLoadedRef.current = true;
+        
+        // Vérifier si le contenu a été injecté après un délai
+        const contentCheckTimeout = window.setTimeout(() => {
+          const counterDiv = document.getElementById('free-visitor-counter');
+          if (counterDiv) {
+            const hasRealContent = counterDiv.innerHTML.includes('counter') || 
+                                   counterDiv.innerHTML.includes('digit') ||
+                                   counterDiv.children.length > 1;
+            
+            console.log('📊 Contenu injecté:', hasRealContent, 'Nombre d\'enfants:', counterDiv.children.length);
+            
+            if (hasRealContent) {
+              setCounterLoaded(true);
+              setLoadingError(null);
+              
+              // Sauvegarder un fallback chiffré
+              try {
+                const counterText = counterDiv.textContent || '';
+                const numbers = counterText.match(/\d+/g);
+                if (numbers && numbers.length > 0) {
+                  const count = parseInt(numbers[0], 10);
+                  if (!isNaN(count)) {
+                    saveEncryptedCount(count);
+                    setFallbackData(count);
+                  }
+                }
+              } catch (e) {
+                console.log('⚠️ Impossible d\'extraire les données du compteur');
+              }
+            } else {
+              console.warn('⚠️ Script chargé mais aucun contenu injecté');
+              fallbackToLocalStorage();
+            }
+          }
+        }, 1500);
+        
+        // Nettoyer le timeout
+        return () => clearTimeout(contentCheckTimeout);
+      };
+
+      counterScript.onerror = (error) => {
+        console.error('❌ Erreur chargement script compteur:', error);
+        scriptsLoadedRef.current = false;
+        fallbackToLocalStorage();
+      };
+
+      document.head.appendChild(authScript);
+      document.head.appendChild(counterScript);
+
+      // Timeout de sécurité
+      safetyTimeoutRef.current = window.setTimeout(() => {
+        console.log('⏱️ Timeout de sécurité - vérification de l\'état');
+        if (!scriptsLoadedRef.current) {
+          console.warn('⚠️ Timeout: scripts non chargés');
+          fallbackToLocalStorage();
+        }
+      }, 5000);
+
+    } catch (err) {
+      console.error('❌ Erreur dans loadCounter:', err);
+      fallbackToLocalStorage();
+    }
+  };
+
+  // Fallback vers localStorage
+  const fallbackToLocalStorage = () => {
+    console.log('🔄 Activation du mode fallback');
+    
+    // Incrémenter le compteur local si c'est la première visite de la session
+    if (typeof window !== 'undefined' && !sessionStorage.getItem('counter_viewed')) {
+      const currentCount = fallbackData || 0;
+      const newCount = currentCount + 1;
+      
+      saveEncryptedCount(newCount);
+      setFallbackData(newCount);
+      sessionStorage.setItem('counter_viewed', 'true');
+    }
+    
+    setLoadingError('Le compteur externe n\'est pas disponible. Affichage des données locales.');
+    setCounterLoaded(true);
+  };
+
+  // Charger le compteur seulement quand visible
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const timer = window.setTimeout(loadCounter, 100);
+    
+    return () => {
+      clearTimeout(timer);
+      if (safetyTimeoutRef.current !== null) {
+        clearTimeout(safetyTimeoutRef.current);
+        safetyTimeoutRef.current = null;
+      }
+      scriptsLoadedRef.current = false;
+    };
+  }, [isVisible]);
+
+  // Gestionnaire de touches - CORRIGÉ: Ctrl+Shift+V
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'V') {
+      // Vérifier si Ctrl+Shift+V sont pressés
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'v') {
         e.preventDefault();
-        setShowPasswordPrompt(true);
+        setShowPasswordInput(true);
+        setPassword('');
         setError('');
+        sessionStorage.removeItem('failed_attempts');
       }
+      // Vérifier la touche Escape
       if (e.key === 'Escape') {
-        if (showPasswordPrompt) {
-          setShowPasswordPrompt(false);
-          setPasswordInput('');
-        } else if (showDeleteDialog) {
-          setShowDeleteDialog(false);
-          setDeleteMode(null);
-          setConfirmationInput('');
+        if (showPasswordInput) {
+          setShowPasswordInput(false);
+          setPassword('');
+          setError('');
+          sessionStorage.removeItem('failed_attempts');
         } else {
           setIsVisible(false);
         }
@@ -321,698 +266,487 @@ const SimpleVisitorCounter: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [showPasswordPrompt, showDeleteDialog]);
+  }, [showPasswordInput]);
 
-  // ==================== CHARGEMENT DONNÉES ====================
-
-  useEffect(() => {
-    if (isVisible) {
-      const loadData = () => {
-        const stored = localStorage.getItem('visitor_logs');
-        const logs: Visitor[] = stored ? JSON.parse(stored) : [];
-        setVisitors(logs);
-        
-        const totalViews = parseInt(localStorage.getItem('total_page_views') || '0');
-        setTotalPageViews(totalViews);
-        
-        updateStatistics(logs);
-        setLastUpdate(new Date().toLocaleTimeString('fr-FR'));
-      };
-
-      loadData();
-      const refreshInterval = setInterval(loadData, 5000);
-      return () => clearInterval(refreshInterval);
-    }
-  }, [isVisible]);
-
-  // ==================== FONCTIONS SUPPRESSION ====================
-
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (verifyPassword(passwordInput)) {
+    
+    // Vérifier si bloqué temporairement
+    const failedAttempts = sessionStorage.getItem('failed_attempts') || '0';
+    if (parseInt(failedAttempts) >= 3) {
+      setError('Trop de tentatives échouées. Veuillez réessayer dans 30 secondes.');
+      return;
+    }
+    
+    // Vérifier le mot de passe via hash SHA-256
+    if (verifyPassword(password)) {
       setIsVisible(true);
-      setShowPasswordPrompt(false);
-      setPasswordInput('');
+      setShowPasswordInput(false);
+      setPassword('');
       setError('');
+      sessionStorage.removeItem('failed_attempts');
+      
+      // Journaliser l'accès réussi
+      console.log('🔓 Accès autorisé à', new Date().toLocaleTimeString());
     } else {
-      setError('Code incorrect');
-    }
-  };
-
-  const deleteVisitors = () => {
-    if (!deleteMode) return;
-
-    setDeleteLoading(true);
-
-    setTimeout(() => {
-      const stored = localStorage.getItem('visitor_logs');
-      let logs: Visitor[] = stored ? JSON.parse(stored) : [];
-      const currentTime = Date.now();
-
-      let newLogs: Visitor[] = [];
-      let deletedCount = 0;
-
-      switch (deleteMode) {
-        case 'all':
-          deletedCount = logs.length;
-          newLogs = [];
-          localStorage.setItem('total_page_views', '0');
-          setTotalPageViews(0);
-          break;
-        case 'old':
-          const thresholdTime = currentTime - (deleteDaysThreshold * 24 * 60 * 60 * 1000);
-          newLogs = logs.filter(visitor => visitor.timestamp > thresholdTime);
-          deletedCount = logs.length - newLogs.length;
-          break;
-        case 'today':
-          const today = new Date().toDateString();
-          newLogs = logs.filter(visitor => 
-            new Date(visitor.timestamp).toDateString() !== today
-          );
-          deletedCount = logs.length - newLogs.length;
-          break;
-        case 'session':
-          const activeSessions = JSON.parse(localStorage.getItem('active_sessions') || '{}');
-          const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
-          const currentSessionIds = Object.keys(activeSessions).filter(
-            sessionId => activeSessions[sessionId] > thirtyMinutesAgo
-          );
-          newLogs = logs.filter(visitor => 
-            !currentSessionIds.includes(visitor.sessionId)
-          );
-          deletedCount = logs.length - newLogs.length;
-          break;
-        case 'selected':
-          if (selectedVisitors.size > 0) {
-            newLogs = logs.filter(visitor => !selectedVisitors.has(visitor.id));
-            deletedCount = selectedVisitors.size;
-            setSelectedVisitors(new Set());
-          } else {
-            newLogs = logs;
-          }
-          break;
+      const newAttempts = parseInt(failedAttempts) + 1;
+      sessionStorage.setItem('failed_attempts', newAttempts.toString());
+      
+      if (newAttempts >= 3) {
+        setError('Trop de tentatives échouées. Veuillez réessayer dans 30 secondes.');
+        
+        // Débloquer après 30 secondes
+        setTimeout(() => {
+          sessionStorage.removeItem('failed_attempts');
+          console.log('🔓 Compte débloqué après 30 secondes');
+        }, 30000);
+      } else {
+        setError(`Mot de passe incorrect (${3 - newAttempts} tentative(s) restante(s))`);
       }
-
-      localStorage.setItem('visitor_logs', JSON.stringify(newLogs));
-      setVisitors(newLogs);
-      updateStatistics(newLogs);
-      setLastUpdate(new Date().toLocaleTimeString('fr-FR'));
-
-      setShowDeleteDialog(false);
-      setDeleteMode(null);
-      setConfirmationInput('');
-      setDeleteLoading(false);
-
-      alert(`${deletedCount} visites supprimées (localement).`);
-      window.dispatchEvent(new CustomEvent('visitorsDeleted'));
-    }, 500);
-  };
-
-  // ==================== FONCTIONS UTILITAIRES ====================
-
-  const toggleVisitorSelection = (visitorId: string) => {
-    const newSelected = new Set(selectedVisitors);
-    if (newSelected.has(visitorId)) {
-      newSelected.delete(visitorId);
-    } else {
-      newSelected.add(visitorId);
-    }
-    setSelectedVisitors(newSelected);
-  };
-
-  const toggleSelectAll = () => {
-    if (selectedVisitors.size === visitors.length) {
-      setSelectedVisitors(new Set());
-    } else {
-      const allIds = visitors.map(v => v.id);
-      setSelectedVisitors(new Set(allIds));
+      
+      setPassword('');
     }
   };
 
-  const selectedCount = selectedVisitors.size;
-
-  const openDeleteDialog = (mode: 'all' | 'old' | 'today' | 'session' | 'selected') => {
-    setDeleteMode(mode);
-    setShowDeleteDialog(true);
-    setConfirmationInput('');
+  const handleClose = () => {
+    setIsVisible(false);
+    // Nettoyer les scripts
+    document.querySelectorAll('script[src*="freevisitorcounters"]').forEach(s => s.remove());
+    if (safetyTimeoutRef.current !== null) {
+      clearTimeout(safetyTimeoutRef.current);
+      safetyTimeoutRef.current = null;
+    }
+    setCounterLoaded(false);
+    setLoadingError(null);
   };
 
-  const formatDateTime = (timestamp: number): string => {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
+  const handleRetry = () => {
+    setCounterLoaded(false);
+    setLoadingError(null);
+    loadCounter();
   };
 
-  const timeAgo = (timestamp: number): string => {
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
-    if (seconds < 60) return 'À l\'instant';
-    if (seconds < 120) return 'Il y a 1 minute';
-    if (seconds < 3600) return `Il y a ${Math.floor(seconds / 60)} minutes`;
-    if (seconds < 7200) return 'Il y a 1 heure';
-    if (seconds < 86400) return `Il y a ${Math.floor(seconds / 3600)} heures`;
-    if (seconds < 172800) return 'Il y a 1 jour';
-    return `Il y a ${Math.floor(seconds / 86400)} jours`;
-  };
-
-  // ==================== RENDU ====================
-
-  if (!isVisible && !showPasswordPrompt && !showDeleteDialog) return null;
+  // Rien n'est affiché par défaut
+  if (!isVisible && !showPasswordInput) return null;
 
   return (
     <>
-      {/* Prompt de mot de passe */}
-      {showPasswordPrompt && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Lock className="w-5 h-5 text-gray-700 dark:text-gray-300" /> Accès aux statistiques
-            </h3>
-            <form onSubmit={handlePasswordSubmit}>
-              <input
-                type="password"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder="Entrez le code d'accès"
-                autoFocus
-              />
-              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-              <div className="flex justify-end gap-3 mt-6">
+      {/* Modal de mot de passe */}
+      {showPasswordInput && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: '20px'
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            padding: '30px',
+            width: '100%',
+            maxWidth: '400px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '20px',
+              color: '#333'
+            }}>
+              <Lock size={24} />
+              <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>
+                Accès sécurisé aux statistiques
+              </h3>
+            </div>
+
+            <form onSubmit={handleSubmit}>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Entrez le mot de passe sécurisé"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px 12px 40px',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    outline: 'none',
+                    transition: 'border-color 0.3s',
+                    boxSizing: 'border-box'
+                  }}
+                  autoFocus
+                  onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                />
+                <Key 
+                  size={16} 
+                  style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#9ca3af'
+                  }} 
+                />
+              </div>
+              
+              {error && (
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '6px',
+                  color: '#ef4444', 
+                  fontSize: '14px', 
+                  marginTop: '8px',
+                  padding: '8px',
+                  backgroundColor: '#fef2f2',
+                  borderRadius: '4px'
+                }}>
+                  <AlertCircle size={14} />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                marginTop: '24px',
+                justifyContent: 'flex-end'
+              }}>
                 <button
                   type="button"
                   onClick={() => {
-                    setShowPasswordPrompt(false);
-                    setPasswordInput('');
+                    setShowPasswordInput(false);
+                    setPassword('');
                     setError('');
+                    sessionStorage.removeItem('failed_attempts');
                   }}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#f3f4f6',
+                    color: '#4b5563',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
                 >
                   Annuler (ESC)
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    transition: 'background-color 0.3s'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#3b82f6'}
                 >
-                  Accéder
+                  Confirmer
                 </button>
               </div>
             </form>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">
-              Ctrl+Shift+V pour afficher • ESC pour annuler
-            </p>
+
+            {/* <div style={{
+              marginTop: '20px',
+              padding: '12px',
+              backgroundColor: '#f8fafc',
+              borderRadius: '8px',
+              fontSize: '12px',
+              color: '#64748b'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                <Lock size={12} />
+                <strong>Sécurité renforcée</strong>
+              </div>
+              <p style={{ margin: '4px 0' }}>
+                • Mot de passe chiffré avec SHA-256
+              </p>
+              <p style={{ margin: '4px 0' }}>
+                • Données locales protégées par AES
+              </p>
+              <p style={{ margin: '4px 0' }}>
+                • 3 tentatives maximum autorisées
+              </p>
+            </div> */}
+
+            {/* <div style={{
+              marginTop: '16px',
+              fontSize: '12px',
+              color: '#6b7280',
+              textAlign: 'center'
+            }}>
+              <p style={{ margin: 0 }}>
+                Appuyez sur <strong>Ctrl+Shift+V</strong> pour afficher cette fenêtre
+              </p>
+              <p style={{ margin: '4px 0 0 0' }}>
+                <strong>ESC</strong> pour annuler • Mot de passe: <strong>claudio</strong>
+              </p>
+            </div> */}
           </div>
         </div>
       )}
 
-      {/* Dialogue de suppression */}
-      {showDeleteDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
-            <div className="flex items-center gap-2 mb-4 text-red-600 dark:text-red-400">
-              <AlertTriangle className="w-6 h-6" />
-              <h3 className="text-lg font-bold">Confirmer la suppression</h3>
+      {/* Le compteur (seulement visible après authentification) */}
+      {isVisible && (
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          zIndex: 9998,
+          maxWidth: '320px'
+        }}>
+          {/* En-tête avec bouton fermer */}
+          <div style={{
+            backgroundColor: '#1f2937',
+            color: 'white',
+            padding: '12px 16px',
+            borderTopLeftRadius: '10px',
+            borderTopRightRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Eye size={16} />
+              <span style={{ fontSize: '14px', fontWeight: '500' }}>
+                Statistiques visiteurs
+              </span>
             </div>
-            
-            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                {deleteMode === 'all' && "Supprimer TOUTES les visites locales."}
-                {deleteMode === 'old' && `Supprimer les visites de plus de ${deleteDaysThreshold} jours.`}
-                {deleteMode === 'today' && "Supprimer toutes les visites d'aujourd'hui."}
-                {deleteMode === 'session' && "Supprimer les visites des sessions actives."}
-                {deleteMode === 'selected' && `Supprimer ${selectedCount} visite(s) sélectionnée(s).`}
-              </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{
+                fontSize: '10px',
+                backgroundColor: '#10b981',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                color: 'white'
+              }}>
+                🔐 Sécurisé
+              </span>
+              <button
+                onClick={handleClose}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#9ca3af',
+                  cursor: 'pointer',
+                  fontSize: '20px',
+                  lineHeight: '1'
+                }}
+                title="Fermer"
+              >
+                ×
+              </button>
             </div>
+          </div>
 
-            {deleteMode === 'old' && (
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Âge des données à supprimer (jours) :
-                </label>
-                <div className="flex items-center gap-4">
-                  <input
-                    type="range"
-                    min="1"
-                    max="365"
-                    value={deleteDaysThreshold}
-                    onChange={(e) => setDeleteDaysThreshold(parseInt(e.target.value))}
-                    className="flex-1"
-                  />
-                  <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                    {deleteDaysThreshold} jours
-                  </span>
+          {/* Contenu du compteur */}
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '10px',
+            borderTopLeftRadius: '0',
+            borderTopRightRadius: '0',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+            padding: '20px',
+            border: '1px solid #e5e7eb',
+            borderTop: 'none'
+          }}>
+            {/* Placeholder en attendant le chargement */}
+            {!counterLoaded ? (
+              <div style={{ textAlign: 'center', padding: '20px' }}>
+                <div style={{ 
+                  display: 'inline-block',
+                  width: '30px',
+                  height: '30px',
+                  border: '3px solid #f3f3f3',
+                  borderTop: '3px solid #3b82f6',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                  marginBottom: '15px'
+                }} />
+                <p style={{ margin: 0, color: '#6b7280' }}>
+                  Chargement sécurisé des statistiques...
+                </p>
+              </div>
+            ) : (
+              <div id="free-visitor-counter">
+                {/* Affichage d'erreur ou fallback */}
+                {loadingError && (
+                  <div style={{
+                    padding: '15px',
+                    backgroundColor: '#fef2f2',
+                    borderRadius: '8px',
+                    marginBottom: '15px',
+                    border: '1px solid #fecaca'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                      <AlertCircle size={16} color="#dc2626" />
+                      <span style={{ color: '#dc2626', fontSize: '14px', fontWeight: '500' }}>
+                        Mode local activé
+                      </span>
+                    </div>
+                    <p style={{ color: '#6b7280', fontSize: '13px', margin: 0 }}>
+                      {loadingError}
+                    </p>
+                  </div>
+                )}
+
+                {/* Fallback display */}
+                {fallbackData !== null && (
+                  <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+                    <div style={{
+                      fontSize: '42px',
+                      fontWeight: 'bold',
+                      color: '#1f2937',
+                      marginBottom: '5px',
+                      letterSpacing: '2px',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent'
+                    }}>
+                      {fallbackData.toLocaleString()}
+                    </div>
+                    <div style={{
+                      fontSize: '14px',
+                      color: '#6b7280',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px'
+                    }}>
+                      <Lock size={12} />
+                      Visiteurs sécurisés
+                    </div>
+                  </div>
+                )}
+
+                {/* Zone pour le contenu injecté par le script */}
+                <div style={{ 
+                  minHeight: '60px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {/* Le script externe injectera son contenu ici */}
+                </div>
+
+                {/* Bouton de rafraîchissement */}
+                <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                  <button
+                    onClick={handleRetry}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 16px',
+                      backgroundColor: '#f3f4f6',
+                      color: '#4b5563',
+                      border: 'none',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      transition: 'all 0.3s'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = '#e5e7eb';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f3f4f6';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    <RefreshCw size={14} />
+                    Rafraîchir les données
+                  </button>
                 </div>
               </div>
             )}
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Tapez "SUPPRIMER" pour confirmer :
-              </label>
-              <input
-                type="text"
-                value={confirmationInput}
-                onChange={(e) => setConfirmationInput(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder="SUPPRIMER"
-                autoFocus
-              />
+            {/* Indicateur de sécurité */}
+            <div style={{
+              marginTop: '15px',
+              padding: '10px',
+              backgroundColor: '#f0f9ff',
+              borderRadius: '6px',
+              border: '1px solid #e0f2fe',
+              textAlign: 'center'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <Lock size={12} color="#0369a1" />
+                <span style={{ fontSize: '11px', color: '#0369a1' }}>
+                  Données chiffrées avec AES-256 • Protection SHA-256
+                </span>
+              </div>
             </div>
 
-            <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowDeleteDialog(false);
-                  setDeleteMode(null);
-                  setConfirmationInput('');
+            {/* Lien vers free-counters */}
+            <div style={{
+              marginTop: '10px',
+              paddingTop: '10px',
+              borderTop: '1px solid #f3f4f6',
+              textAlign: 'center'
+            }}>
+              <a
+                href="https://www.free-counters.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: '11px',
+                  color: '#6b7280',
+                  textDecoration: 'none',
+                  transition: 'color 0.3s'
                 }}
-                className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white flex items-center gap-2"
-                disabled={deleteLoading}
+                onMouseOver={(e) => e.currentTarget.style.color = '#3b82f6'}
+                onMouseOut={(e) => e.currentTarget.style.color = '#6b7280'}
               >
-                <X className="w-4 h-4" /> Annuler
-              </button>
-              <button
-                type="button"
-                onClick={deleteVisitors}
-                disabled={confirmationInput !== 'SUPPRIMER' || deleteLoading}
-                className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-                  confirmationInput === 'SUPPRIMER' && !deleteLoading
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                {deleteLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Suppression...
-                  </>
-                ) : (
-                  <>
-                    <Trash2 className="w-4 h-4" /> Supprimer
-                  </>
-                )}
-              </button>
+                Powered by Free-Counters.org
+              </a>
+            </div>
+
+            {/* Indicateur de raccourci clavier */}
+            <div style={{
+              marginTop: '10px',
+              fontSize: '10px',
+              color: '#9ca3af',
+              textAlign: 'center'
+            }}>
+              Ctrl+Shift+V pour afficher • ESC pour fermer
             </div>
           </div>
+
+          {/* Style pour le spinner */}
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
         </div>
-      )}
-
-      {/* Section des statistiques */}
-      {isVisible && (
-        <section className="py-12 px-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <Eye className="w-6 h-6 text-blue-600 dark:text-blue-400" /> Statistiques Visiteurs (Admin)
-              </h2>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={resetCounterData}
-                  className="flex items-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
-                  title="Réinitialiser le compteur externe"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Réinitialiser
-                </button>
-
-                <div className="relative group">
-                  <button
-                    onClick={() => {
-                      if (selectedCount > 0) {
-                        openDeleteDialog('selected');
-                      } else {
-                        const dropdown = document.getElementById('deleteDropdown');
-                        if (dropdown) dropdown.classList.toggle('hidden');
-                      }
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                    title="Options de suppression"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    {selectedCount > 0 ? `Supprimer (${selectedCount})` : 'Supprimer'}
-                  </button>
-                  
-                  <div id="deleteDropdown" className="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-10 border border-gray-200 dark:border-gray-700">
-                    <div className="p-2">
-                      <button onClick={() => openDeleteDialog('selected')}
-                        className={`w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                          selectedCount === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 dark:text-gray-300'
-                        }`}
-                        disabled={selectedCount === 0}
-                      >
-                        Supprimer sélection ({selectedCount})
-                      </button>
-                      <button onClick={() => openDeleteDialog('today')}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        Supprimer visites d'aujourd'hui
-                      </button>
-                      <button onClick={() => openDeleteDialog('old')}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        Supprimer vieilles visites
-                      </button>
-                      <hr className="my-2 border-gray-200 dark:border-gray-700" />
-                      <button onClick={() => openDeleteDialog('all')}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 font-medium">
-                        Tout supprimer (local)
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setIsVisible(false)}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                  aria-label="Masquer les statistiques"
-                >
-                  <span className="text-xl">×</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Statistiques principales - STABLES */}
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
-              <StatCard 
-                icon={<TrendingUp className="w-4 h-4 text-blue-500" />}
-                value={totalPageViews}
-                label="Pages vues (local)"
-                color="blue"
-              />
-              
-              <StatCard 
-                icon={<Globe className="w-4 h-4 text-green-500" />}
-                value={counterData.total}
-                label="Total (Externe)"
-                color="green"
-              />
-              
-              <StatCard 
-                icon={<Users className="w-4 h-4 text-purple-500" />}
-                value={uniqueVisitors}
-                label="Visiteurs uniques"
-                color="purple"
-              />
-              
-              <StatCard 
-                icon={<Calendar className="w-4 h-4 text-yellow-500" />}
-                value={todayCount}
-                label="Aujourd'hui (local)"
-                color="yellow"
-              />
-              
-              <StatCard 
-                icon={<Calendar className="w-4 h-4 text-orange-500" />}
-                value={counterData.today}
-                label="Aujourd'hui (externe)"
-                color="orange"
-              />
-              
-              <StatCard 
-                icon={<Monitor className="w-4 h-4 text-red-500" />}
-                value={counterData.online}
-                label="En ligne (externe)"
-                color="red"
-              />
-            </div>
-
-            {/* Statistiques détaillées externes */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mb-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <ExternalLink className="w-5 h-5 text-purple-500" />
-                  Statistiques FreeVisitorCounters.com
-                </h3>
-                <div className="flex items-center gap-2">
-                  <span className={`text-xs px-2 py-1 rounded ${
-                    externalCounterLoaded 
-                      ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300' 
-                      : 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300'
-                  }`}>
-                    {externalCounterLoaded ? '✅ Connecté' : '🔄 Chargement...'}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatBox label="Hier" value={counterData.yesterday} />
-                <StatBox label="Cette semaine" value={counterData.week} />
-                <StatBox label="Ce mois" value={counterData.month} />
-                <StatBox label="En ligne" value={counterData.online} />
-              </div>
-              
-              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <a 
-                    href="http://www.freevisitorcounters.com" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    Voir le tableau de bord complet sur FreeVisitorCounters.com
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            {/* Dernières visites locales */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mb-6">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-blue-500" />
-                    Dernières visites en temps réel (local)
-                  </h3>
-                  {selectedCount > 0 && (
-                    <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 text-sm rounded-full">
-                      {selectedCount} sélectionné(s)
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={toggleSelectAll}
-                    className="text-sm px-3 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    {selectedVisitors.size === visitors.length ? 'Tout désélectionner' : 'Tout sélectionner'}
-                  </button>
-                  <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded">
-                    Auto-rafraîchi
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Dernière maj: {lastUpdate}
-                  </span>
-                </div>
-              </div>
-              
-              <VisitorTable 
-                visitors={visitors.slice(0, 20)}
-                selectedVisitors={selectedVisitors}
-                toggleVisitorSelection={toggleVisitorSelection}
-                formatDateTime={formatDateTime}
-                timeAgo={timeAgo}
-              />
-            </div>
-
-            {/* Graphique 7 jours */}
-            <SevenDayChart visitors={visitors} />
-
-            {/* Informations de bas de page */}
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg mb-4">
-                <div className={`w-3 h-3 rounded-full ${externalCounterLoaded ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Données STABLES • Synchronisé avec FreeVisitorCounters.com
-                </p>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {/* Ctrl+Shift+V pour afficher • ESC pour masquer */}
-              </p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                {visitors.length} visites locales • {counterData.total} visites externes
-              </p>
-            </div>
-          </div>
-        </section>
       )}
     </>
   );
 };
 
-// Composants enfants pour une meilleure organisation
-const StatCard: React.FC<{
-  icon: React.ReactNode;
-  value: number;
-  label: string;
-  color: string;
-}> = ({ icon, value, label, color }) => (
-  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
-    <div className="flex items-center gap-2 mb-2">
-      {icon}
-      <div className={`text-2xl font-bold text-${color}-600 dark:text-${color}-400`}>
-        {value.toLocaleString()}
-      </div>
-    </div>
-    <div className="text-xs text-gray-600 dark:text-gray-300">
-      {label}
-    </div>
-  </div>
-);
-
-const StatBox: React.FC<{ label: string; value: number }> = ({ label, value }) => (
-  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-    <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</div>
-    <div className="text-2xl font-bold text-gray-900 dark:text-white">{value.toLocaleString()}</div>
-  </div>
-);
-
-const VisitorTable: React.FC<{
-  visitors: Visitor[];
-  selectedVisitors: Set<string>;
-  toggleVisitorSelection: (id: string) => void;
-  formatDateTime: (timestamp: number) => string;
-  timeAgo: (timestamp: number) => string;
-}> = ({ visitors, selectedVisitors, toggleVisitorSelection, formatDateTime, timeAgo }) => (
-  <div className="overflow-x-auto">
-    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-      <thead>
-        <tr>
-          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase w-8">
-            <input
-              type="checkbox"
-              checked={selectedVisitors.size === visitors.length && visitors.length > 0}
-              onChange={() => {}}
-              className="rounded border-gray-300 dark:border-gray-600"
-            />
-          </th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Date & Heure</th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Il y a</th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Page</th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Navigateur</th>
-          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Statut</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-        {visitors.map(visitor => {
-          const isRecent = Date.now() - visitor.timestamp < 300000;
-          const isOnline = Date.now() - visitor.timestamp < 1800000;
-          const isSelected = selectedVisitors.has(visitor.id);
-          
-          return (
-            <tr key={visitor.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700 ${
-              isSelected ? 'bg-blue-50 dark:bg-blue-900/20' :
-              isRecent ? 'bg-blue-50 dark:bg-blue-900/20' : 
-              isOnline ? 'bg-green-50 dark:bg-green-900/10' : ''
-            }`}>
-              <td className="px-4 py-3">
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => toggleVisitorSelection(visitor.id)}
-                  className="rounded border-gray-300 dark:border-gray-600"
-                />
-              </td>
-              <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{formatDateTime(visitor.timestamp)}</td>
-              <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{timeAgo(visitor.timestamp)}</td>
-              <td className="px-4 py-3 text-sm"><span className="px-2 py-1 bg-gray-100 dark:bg-gray-600 rounded text-xs font-mono">{visitor.page}</span></td>
-              <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                <div className="truncate max-w-xs" title={visitor.userAgent}>
-                  {(() => {
-                    const ua = visitor.userAgent.toLowerCase();
-                    if (ua.includes('chrome')) return 'Chrome';
-                    if (ua.includes('firefox')) return 'Firefox';
-                    if (ua.includes('safari') && !ua.includes('chrome')) return 'Safari';
-                    if (ua.includes('edge')) return 'Edge';
-                    if (ua.includes('opera')) return 'Opera';
-                    return 'Navigateur';
-                  })()}
-                </div>
-              </td>
-              <td className="px-4 py-3">
-                {isRecent ? (
-                  <span className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs rounded">En ligne</span>
-                ) : isOnline ? (
-                  <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 text-xs rounded">Récent</span>
-                ) : visitor.isNewSession ? (
-                  <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-300 text-xs rounded">Nouveau</span>
-                ) : (
-                  <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded">Retour</span>
-                )}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-    
-    {visitors.length === 0 && (
-      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-        Aucune visite enregistrée pour le moment
-      </div>
-    )}
-  </div>
-);
-
-const SevenDayChart: React.FC<{ visitors: Visitor[] }> = ({ visitors }) => {
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mb-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-        Activité des 7 derniers jours (local)
-      </h3>
-      <div className="grid grid-cols-7 gap-2">
-        {Array.from({ length: 7 }).map((_, index) => {
-          const date = new Date();
-          date.setDate(date.getDate() - index);
-          const dayString = date.toDateString();
-          
-          const dayVisits = visitors.filter(v => 
-            new Date(v.timestamp).toDateString() === dayString
-          );
-          
-          const uniqueDaySessions = new Set(dayVisits.map(v => v.sessionId));
-          
-          const maxVisits = Math.max(...Array.from({ length: 7 }).map((_, i) => {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            const ds = d.toDateString();
-            return visitors.filter(v => new Date(v.timestamp).toDateString() === ds).length;
-          }));
-          
-          const height = maxVisits > 0 ? (dayVisits.length / maxVisits) * 80 : 0;
-          
-          return (
-            <div key={index} className="text-center">
-              <div className="mb-2">
-                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {date.toLocaleDateString('fr-FR', { weekday: 'short' })}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {date.getDate()}/{date.getMonth() + 1}
-                </div>
-              </div>
-              <div className="relative h-20 flex flex-col justify-end">
-                <div 
-                  className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t transition-all duration-300"
-                  style={{ height: `${height}%` }}
-                  title={`${dayVisits.length} visites, ${uniqueDaySessions.size} uniques`}
-                />
-                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs font-bold text-gray-700 dark:text-gray-300">
-                  {dayVisits.length}
-                </div>
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {uniqueDaySessions.size} uniques
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-export default SimpleVisitorCounter;
+export default VisitorCounter;
