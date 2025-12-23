@@ -10,7 +10,7 @@ const VisitorCounter: React.FC = () => {
   // const [counterLoaded, setCounterLoaded] = useState(false);
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [loadingError, setLoadingError] = useState<string | null>(null);
-  const [counterData, setCounterData] = useState<{ today: number; total: number }>({ today: 0, total: 590 });
+  const [counterData, setCounterData] = useState<{ today: number; total: number }>({ today: 0, total: 0 });
   const [counterType, setCounterType] = useState<'primary' | 'local'>('local');
   
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -66,7 +66,7 @@ const VisitorCounter: React.FC = () => {
     try {
       // Charger le compteur total depuis localStorage
       const savedTotal = localStorage.getItem('counter_total');
-      let total = 590; // Valeur par défaut
+      let total = 0; // Valeur par défaut
       
       if (savedTotal) {
         const decrypted = decryptData(savedTotal);
@@ -172,7 +172,7 @@ const VisitorCounter: React.FC = () => {
         </a>
         
         <div id="counter-display">
-          <div class="counter-value">590</div>
+          <div class="counter-value">0</div>
           <div class="counter-label">Total visiteurs</div>
         </div>
         
@@ -575,11 +575,7 @@ const VisitorCounter: React.FC = () => {
                     fontWeight: 'bold',
                     color: '#1f2937',
                     marginBottom: '4px',
-                    background: counterType === 'primary' 
-                      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-                      : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent'
+                    background: 'transparent'
                   }}>
                     {counterData.total.toLocaleString()}
                   </div>
