@@ -501,7 +501,7 @@ const VisitorCounter: React.FC = () => {
                     Aujourd'hui
                   </div>
                 </div>
-                <div className="text-center">
+                {/* <div className="text-center">
                   <div className={`text-3xl font-bold mb-1 ${
                     counterData.total === 10 
                       ? 'bg-red-50 text-red-600 px-3 py-1 rounded-lg' 
@@ -517,7 +517,7 @@ const VisitorCounter: React.FC = () => {
                   <div className="text-xs text-gray-500 uppercase tracking-wider">
                     Total
                   </div>
-                </div>
+                </div> */}
               </div>
               
               {counterData.total === 10 && (
