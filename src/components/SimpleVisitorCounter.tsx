@@ -42,7 +42,7 @@ const VisitorCounter: React.FC = () => {
   const [apiStatus, setApiStatus] = useState<'online' | 'offline'>('offline');
 
   // ============================================
-  // 📊 LOGIQUE DE COMPTAGE
+  // 📊 LOGIQUE DE COMPTAGE AMÉLIORÉE
   // ============================================
   const fetchStats = async (shouldIncrement: boolean) => {
     setLoading(true);
@@ -56,34 +56,82 @@ const VisitorCounter: React.FC = () => {
       const hasVisitedToday = sessionStorage.getItem(CONFIG.STORAGE_KEYS.SESSION_TODAY);
 
       // ========================================
-      // 1️⃣ COMPTEUR TOTAL (API ou LocalStorage)
+      // 1️⃣ API AVEC PROXY CORS MULTIPLE
       // ========================================
       try {
-        // Tentative d'utilisation de l'API externe
-        const apiUrl = `https://api.counterapi.dev/v1/${CONFIG.API_NAMESPACE}/total`;
-        const endpoint = shouldIncrement && !hasVisitedGlobal ? `${apiUrl}/increment` : apiUrl;
+        const baseUrl = `https://api.counterapi.dev/v1/${CONFIG.API_NAMESPACE}/total`;
+        const endpoint = shouldIncrement && !hasVisitedGlobal 
+          ? `${baseUrl}/increment` 
+          : baseUrl;
         
-        const response = await fetch(endpoint, { 
-          method: 'GET',
-          cache: 'no-cache'
-        });
+        // Liste de proxys CORS fiables (essaye dans l'ordre)
+        const proxyOptions = [
+          // Proxy 1: corsproxy.io (très fiable)
+          `https://corsproxy.io/?${encodeURIComponent(endpoint)}`,
+          // Proxy 2: thingproxy.freeboard.io
+          `https://thingproxy.freeboard.io/fetch/${endpoint}`,
+          // Proxy 3: api.allorigins.win
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(endpoint)}`,
+          // Proxy 4: cors-anywhere (backup)
+          `https://cors-anywhere.herokuapp.com/${endpoint}`,
+        ];
+        
+        let response = null;
+        
+        // Essayer chaque proxy jusqu'à ce qu'un fonctionne
+        for (const proxyUrl of proxyOptions) {
+          try {
+            console.log(`Essai avec proxy: ${proxyUrl}`);
+            
+            // Créer un AbortController pour timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000); // Timeout 8s
+            
+            response = await fetch(proxyUrl, { 
+              method: 'GET',
+              signal: controller.signal,
+              headers: {
+                'Accept': 'application/json',
+              },
+              mode: 'cors',
+              cache: 'no-cache'
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (response.ok) {
+              console.log(`Proxy réussi: ${proxyUrl}`);
+              break;
+            }
+          } catch (error) {
+            console.warn(`Proxy échoué: ${error}`);
+            continue;
+          }
+        }
 
-        if (!response.ok) throw new Error('API Error');
+        if (!response || !response.ok) {
+          throw new Error('Tous les proxys ont échoué');
+        }
 
         const data = await response.json();
+        console.log('Données API reçues:', data);
+        
         totalCount = data.count || 0;
         setApiStatus('online');
 
         // Marquer comme visité en session
         if (shouldIncrement && !hasVisitedGlobal) {
           sessionStorage.setItem(CONFIG.STORAGE_KEYS.SESSION_GLOBAL, 'true');
+          console.log('Visiteur global incrémenté');
         }
 
         // Sauvegarder en backup local
         localStorage.setItem(CONFIG.STORAGE_KEYS.LOCAL_TOTAL, totalCount.toString());
+        console.log(`Compteur total mis à jour: ${totalCount}`);
 
       } catch (error) {
         // Fallback: utiliser localStorage
+        console.warn('API non accessible, passage en mode local:', error);
         setApiStatus('offline');
         
         const storedCount = localStorage.getItem(CONFIG.STORAGE_KEYS.LOCAL_TOTAL);
@@ -94,6 +142,7 @@ const VisitorCounter: React.FC = () => {
           totalCount += 1;
           localStorage.setItem(CONFIG.STORAGE_KEYS.LOCAL_TOTAL, totalCount.toString());
           sessionStorage.setItem(CONFIG.STORAGE_KEYS.SESSION_GLOBAL, 'true');
+          console.log('Compteur local incrémenté:', totalCount);
         }
       }
 
@@ -109,13 +158,15 @@ const VisitorCounter: React.FC = () => {
         todayCount += 1;
         localStorage.setItem(todayKey, todayCount.toString());
         sessionStorage.setItem(CONFIG.STORAGE_KEYS.SESSION_TODAY, 'true');
+        console.log('Compteur du jour incrémenté:', todayCount);
       }
 
       // Mettre à jour l'état
       setStats({ today: todayCount, total: totalCount });
+      console.log('Stats finales:', { today: todayCount, total: totalCount });
 
     } catch (error) {
-      console.error('Erreur lors du comptage:', error);
+      console.error('Erreur critique lors du comptage:', error);
     } finally {
       setLoading(false);
     }
@@ -178,7 +229,12 @@ const VisitorCounter: React.FC = () => {
   // 🚀 INITIALISATION
   // ============================================
   useEffect(() => {
-    fetchStats(true);
+    // Initialiser avec un petit délai pour éviter les conflits
+    const timer = setTimeout(() => {
+      fetchStats(true);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // ============================================
@@ -307,6 +363,13 @@ const VisitorCounter: React.FC = () => {
                 {apiStatus === 'online' ? '✓' : '⚠'} {statusText}
               </span>
             </div>
+            
+            {/* Note sur le mode */}
+            {apiStatus === 'offline' && (
+              <div className="mt-3 text-[8px] text-yellow-400 text-center">
+                Mode local activé - les données sont sauvegardées sur votre appareil
+              </div>
+            )}
           </div>
         </div>
       )}
