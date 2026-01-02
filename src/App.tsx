@@ -16,6 +16,7 @@ import Contact from './components/Contact';
 import SnowfallEffect from './components/SnowfallEffect';
 import './index.css';
 import VisitorCounter from './components/SimpleVisitorCounter';
+import ServicesPage from './pages/ServicesPage';
 
 // Composant Home
 const HomePage: React.FC = () => {
@@ -27,7 +28,7 @@ const HomePage: React.FC = () => {
 
   return (
     <>
-      <Hero />
+      <Hero onViewAllClick={switchToAllProjects}/>
       <About />
       <Skills />
       <Projects onViewAllClick={switchToAllProjects} />
@@ -43,14 +44,16 @@ const MainLayout: React.FC = () => {
   // Solution optimale: utiliser directement ou déstructurer
   const { pathname } = useLocation();
   const isAllProjectsView = pathname === '/projects';
+  const isServicesView = pathname === '/services';
 
   return (
     <div className="App">
-      <Header hideMenu={isAllProjectsView} />
+      <Header hideMenu={isAllProjectsView || isServicesView} />
       <SnowfallEffect />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/projects" element={<AllProjectsPage />} />
+        <Route path="/services" element={<ServicesPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

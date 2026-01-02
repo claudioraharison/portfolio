@@ -3,7 +3,11 @@ import grama from '../assets/11754566_4827591.jpg';
 import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
 import cvclau from '../assets/Curriculum_Vitae_(Nirina_Claudio_RAHARISON).pdf'
 
-const Hero: React.FC = () => {
+interface ProjectsProps {
+  onViewAllClick: () => void; // Le composant accepte maintenant cette fonction
+}
+
+const Hero: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
   const title = useAutoTranslatedText('hero.title', 'Développeur Front-end & Back-end');
   const subtitle = useAutoTranslatedText('hero.subtitle', 'Passionné par la création d\'applications web modernes avec React, TypeScript et Node.js. Je transforme des idées en solutions digitales élégantes et performantes.');
   const projectsBtn = useAutoTranslatedText('hero.projects_btn', 'Voir mes projets');
@@ -41,6 +45,11 @@ const Hero: React.FC = () => {
     if (e.target === e.currentTarget) {
       closeModal();
     }
+  };
+
+  const handleViewAllClick = (event: React.MouseEvent) => {
+    event.preventDefault(); 
+    onViewAllClick(); // <-- Utilisation de la prop
   };
 
   return (
@@ -83,7 +92,8 @@ const Hero: React.FC = () => {
               </p>
               <div className="flex flex-wrap gap-4">
                 <a 
-                  href="#projects" 
+                  onClick={handleViewAllClick}
+                  href="#" 
                   className="bg-blue-900 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition duration-300 shadow-lg hover:shadow-xl"
                 >
                   {projectsBtn}
