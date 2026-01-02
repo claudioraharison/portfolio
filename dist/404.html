@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mon Portfolio</title>
+    <script>
+      // Redirige TOUTES les pages /portfolio/* vers /* en douceur
+      const path = window.location.pathname;
+      
+      if (path === '/portfolio' || path.startsWith('/portfolio/')) {
+        // Crée la nouvelle URL sans /portfolio
+        const newPath = path.replace('/portfolio', '') || '/';
+        const newUrl = newPath + window.location.search + window.location.hash;
+        
+        // Redirige
+        window.location.replace(newUrl);
+      }
+    </script>
+    <meta http-equiv="refresh" content="0; url=/">
+  </head>
+  <body>
+    <p>Redirection vers le portfolio...</p>
+    <script>
+      // Fallback si JavaScript est désactivé
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
+    </script>
+  </body>
+</html>
