@@ -23,7 +23,7 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   
   const switchToAllProjects = () => {
-    navigate('/projects');
+    navigate('/projects'); // Note: pas de "/portfolio/" ici car basename est déjà "/portfolio"
   };
 
   return (
@@ -41,8 +41,9 @@ const HomePage: React.FC = () => {
 
 // Composant pour la gestion du Layout principal
 const MainLayout: React.FC = () => {
-  // Solution optimale: utiliser directement ou déstructurer
   const { pathname } = useLocation();
+  
+  // Les chemins seront maintenant relatifs au basename
   const isAllProjectsView = pathname === '/projects';
   const isServicesView = pathname === '/services';
 
@@ -51,9 +52,11 @@ const MainLayout: React.FC = () => {
       <Header hideMenu={isAllProjectsView || isServicesView} />
       <SnowfallEffect />
       <Routes>
+        {/* Routes relatives au basename="/portfolio" */}
         <Route path="/" element={<HomePage />} />
         <Route path="/projects" element={<AllProjectsPage />} />
         <Route path="/services" element={<ServicesPage />} />
+        {/* Route catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
@@ -62,7 +65,7 @@ const MainLayout: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <Router basename="/portfolio">
       <AutoTranslationProvider>
         <MainLayout />
       </AutoTranslationProvider>
