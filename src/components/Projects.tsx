@@ -52,42 +52,64 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
             const badgeBg = isPersonal ? 'bg-blue-100' : 'bg-green-100';
             const badgeText = isPersonal ? 'text-blue-900' : 'text-green-700';
             
-            // Logique de validation du lien Live et facteur d'échelle pour l'aperçu
+            // Logique de validation du lien Live
             const isLiveUrlValid = project.liveUrl && project.liveUrl !== '#';
-            const scaleFactor = 0.28; 
+            
+            // Vérifier si l'URL est une image (extensions d'image courantes)
+            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'];
+            const isImageUrl = isLiveUrlValid && imageExtensions.some(ext => 
+              project.liveUrl!.toLowerCase().endsWith(ext)
+            ) || (isLiveUrlValid && project.liveUrl!.includes('mastertableLogo')); // Vérification spécifique pour le logo
 
             return (
               <div key={project.id} className="h-full">
                 <div 
                   className="bg-white rounded-xl shadow-lg overflow-hidden group flex flex-col h-full border border-gray-100 hover:shadow-xl transition-shadow duration-300"
                 >
-                  {/* --- APERÇU LIVE OU EN CONSTRUCTION (IFRAME) --- */}
+                  {/* --- APERÇU LIVE, IMAGE OU EN CONSTRUCTION --- */}
                   <div className="relative w-full aspect-video overflow-hidden border-b border-gray-200 block">
                     
                     {isLiveUrlValid ? (
-                      <a 
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block transition duration-300 hover:opacity-80"
-                      >
-                        <div 
-                          className="absolute top-1/2 left-1/2 w-[1280px] h-[720px]" 
-                          style={{ 
-                              transform: `translate(-50%, -50%) scale(${scaleFactor})`,
-                          }}
+                      isImageUrl ? (
+                        // Afficher l'image qui couvre tout le div
+                        <a 
+                          href={project.liveUrl!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block w-full h-full"
                         >
-                          <iframe 
-                            src={project.liveUrl} 
-                            title={`Aperçu de ${project.title}`}
-                            width="100%" 
-                            height="100%" 
-                            scrolling="no" 
-                            frameBorder="0"
-                            className="pointer-events-none" 
+                          <img 
+                            src={project.liveUrl!} 
+                            alt={`Aperçu de ${project.title}`}
+                            className="w-full h-full object-cover transition duration-300 hover:opacity-90"
                           />
-                        </div>
-                      </a>
+                        </a>
+                      ) : (
+                        // Afficher l'iframe pour les URLs web
+                        <a 
+                          href={project.liveUrl!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block transition duration-300 hover:opacity-80"
+                        >
+                          <div 
+                            className="absolute top-1/2 left-1/2 w-[1280px] h-[720px]" 
+                            style={{ 
+                                transform: 'translate(-50%, -50%) scale(0.28)',
+                            }}
+                          >
+                            <iframe 
+                              src={project.liveUrl!} 
+                              title={`Aperçu de ${project.title}`}
+                              width="100%" 
+                              height="100%" 
+                              scrolling="no" 
+                              frameBorder="0"
+                              className="pointer-events-none" 
+                            />
+                          </div>
+                        </a>
+                      )
                     ) : (
                       // Affichage du composant "En construction"
                       <ConstructionPreview title={translatedTitle} />
@@ -135,7 +157,7 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
                       )}
                       {isLiveUrlValid && (
                         <a 
-                          href={project.liveUrl}
+                          href={project.liveUrl!}
                           className="text-blue-900 hover:text-blue-800 transition font-semibold"
                           target="_blank"
                           rel="noopener noreferrer"

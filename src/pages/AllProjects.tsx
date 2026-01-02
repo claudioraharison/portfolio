@@ -120,22 +120,40 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
               
               // Logique de validation du lien Live
               const isLiveUrlValid = project.liveUrl && project.liveUrl !== '#';
+              
+              // Vérifier si l'URL est une image (extensions d'image courantes)
+              const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'];
+              const isImageUrl = isLiveUrlValid && imageExtensions.some(ext => 
+                project.liveUrl!.toLowerCase().endsWith(ext)
+              ) || (isLiveUrlValid && project.liveUrl!.includes('mastertableLogo')); // Vérification spécifique pour le logo
 
               return (
                 <div key={project.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition flex flex-col h-full">
                   
-                  {/* IFRAME ou ConstructionPreview */}
-                  <div className="w-full h-[200px] border-b border-gray-200 bg-gray-100 relative">
+                  {/* IFRAME, IMAGE ou ConstructionPreview */}
+                  <div className="w-full h-[200px] border-b border-gray-200 bg-gray-100 relative overflow-hidden">
                     {isLiveUrlValid ? (
-                      <iframe 
-                        src={project.liveUrl} 
-                        title={`Aperçu de ${project.title}`}
-                        width="100%" 
-                        height="100%" 
-                        frameBorder="0"
-                        scrolling="no"
-                        className="pointer-events-none"
-                      />
+                      isImageUrl ? (
+                        // Afficher l'image qui couvre tout le div
+                        <div className="w-full h-full">
+                          <img 
+                            src={project.liveUrl!} 
+                            alt={`Aperçu de ${project.title}`}
+                            className="w-full h-full object-cover transition duration-300 hover:opacity-90"
+                          />
+                        </div>
+                      ) : (
+                        // Afficher l'iframe pour les URLs web
+                        <iframe 
+                          src={project.liveUrl!} 
+                          title={`Aperçu de ${project.title}`}
+                          width="100%" 
+                          height="100%" 
+                          frameBorder="0"
+                          scrolling="no"
+                          className="pointer-events-none"
+                        />
+                      )
                     ) : (
                       <ConstructionPreview title={project.title} />
                     )}
@@ -179,7 +197,7 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
                       )}
                       {isLiveUrlValid && (
                         <a 
-                          href={project.liveUrl} 
+                          href={project.liveUrl!} 
                           target="_blank" 
                           rel="noopener noreferrer" 
                           className="text-blue-900 hover:text-blue-800 font-medium transition text-sm"

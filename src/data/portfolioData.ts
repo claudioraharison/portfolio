@@ -23,7 +23,7 @@ export const projects: Project[] = [
     liveUrl: mastertableLogo,
   },
   {
-    id: 2,
+    id: 3,
     title: "Application de Gestion",
     client: "Freelance",
     description: "Application web pour la gestion de données avec interface utilisateur intuitive.",
@@ -33,7 +33,7 @@ export const projects: Project[] = [
     liveUrl: "#",
   },
   {
-    id: 3,
+    id: 4,
     title: "Site E-commerce",
     client: "Projet Personnel",
     description: "Plateforme e-commerce avec panier d'achat et système de paiement.",
@@ -43,7 +43,7 @@ export const projects: Project[] = [
     liveUrl: "#",
   },
   {
-    id: 4,
+    id: 5,
     title: "Application Mobile de Gestion d'emploi du Temps",
     client: "Projet Personnel",
     description: "Application mobile multiplateforme pour la gestion d'emploi du temps et de tâches.",
@@ -53,7 +53,7 @@ export const projects: Project[] = [
     liveUrl: "#",
   },
   {
-    id: 5,
+    id: 6,
     title: "Système d'Information Géographique (SIG) pour l'Analyse Urbaine",
     client: "Projet Académique",
     description: "Visualisation et analyse des données urbaines à l'aide de technologies SIG.",
@@ -63,7 +63,7 @@ export const projects: Project[] = [
     liveUrl: "#",
   },
   {
-    id: 6,
+    id: 7,
     title: "Analyse des risques geologiques dans une région donnée",
     client: "Projet Académique",
     description: "Étude des risques géologiques tels que les glissements de terrain et les inondations en utilisant des outils SIG.",
@@ -73,7 +73,7 @@ export const projects: Project[] = [
     liveUrl: "#",
   },
   {
-    id: 7,
+    id: 8,
     title: "inventaire biologique et cartographie des emplacements de biodiversité",
     client: "Projet Académique",
     description: "Collecte et analyse des données biologiques pour cartographier les zones de biodiversité à l'aide de technologies SIG.",
@@ -83,7 +83,7 @@ export const projects: Project[] = [
     liveUrl: "#",
   },
   {
-    id: 8,
+    id: 9,
     title: "Creation d'extension QGIS pour l'automatisation des tâches SIG",
     client: "Projet Personnel",
     description: "Développement d'une extension QGIS personnalisée pour automatiser les flux de travail SIG courants.",
@@ -93,7 +93,7 @@ export const projects: Project[] = [
     liveUrl: "#",
   },
   {
-    id: 9,
+    id: 10,
     title: "Modelisation 2D et 3D sur sketchup et Blender",
     client: "Projet Personnel",
     description: "Création de modèles 2D et 3D pour des projets d'architecture et de design.",
