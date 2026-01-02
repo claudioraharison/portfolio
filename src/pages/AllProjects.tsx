@@ -1,40 +1,29 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import { projects } from '../data/portfolioData';
 import { useAutoTranslatedText } from '../hooks/useAutoTranslatedText';
 import ConstructionPreview from '../components/ConstructionPreview';
 import SnowfallEffect from '../components/SnowfallEffect';
 
-interface AllProjectsPageProps {
-  onBackClick: () => void;
-}
-
 const allCategories = ['Tout', ...new Set(projects.map(p => p.category || 'Autres'))];
 
-const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
+const AllProjectsPage: React.FC = () => {
+  const navigate = useNavigate(); 
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Tout');
   const [showScrollToTop, setShowScrollToTop] = useState(false);
-  const [isNavigatingBack, setIsNavigatingBack] = useState(false);
 
-  // Textes de base traduits automatiquement
   const pageTitle = useAutoTranslatedText('Tous les Projets', 'Tous les Projets');
   const searchPlaceholder = useAutoTranslatedText('Rechercher par titre, tech...', 'Rechercher par titre, tech...');
   const backButtonText = useAutoTranslatedText('Retour à l\'accueil', 'Retour à l\'accueil');
   const codeText = useAutoTranslatedText('Code', 'Code');
   const viewProjectText = useAutoTranslatedText('Voir le site', 'Voir le site');
-  const loadingText = useAutoTranslatedText('Chargement...', 'Chargement...');
   const noProjectsText = useAutoTranslatedText('Aucun projet trouvé', 'Aucun projet trouvé');
 
-  // Gestion du retour avec indicateur de chargement
   const handleBackClick = () => {
-    setIsNavigatingBack(true);
-    setTimeout(() => {
-      onBackClick();
-      setIsNavigatingBack(false);
-    }, 300);
+    navigate('/'); 
   };
 
-  // Filtrage
   const filteredProjects = useMemo(() => {
     let list = projects;
     if (activeCategory !== 'Tout') {
@@ -51,7 +40,6 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
     return list;
   }, [searchTerm, activeCategory]);
 
-  // Gestion du scroll
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const checkScroll = () => setShowScrollToTop(window.pageYOffset > 300);
@@ -71,23 +59,19 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
           <div className="flex flex-col md:flex-row justify-between items-center mb-10">
             <h1 className="text-4xl font-bold text-gray-900 mb-4 md:mb-0">{pageTitle}</h1>
             
+            {/* MODIFIER: Bouton retour simplifié */}
             <button 
-              onClick={handleBackClick} 
-              disabled={isNavigatingBack}
-              className={`flex items-center font-medium transition ${
-                isNavigatingBack 
-                  ? 'text-gray-400 cursor-not-allowed' 
-                  : 'text-blue-900 hover:text-blue-800'
-              }`}
+              onClick={handleBackClick}
+              className="flex items-center font-medium text-blue-900 hover:text-blue-800 transition"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
               </svg>
-              {isNavigatingBack ? loadingText : backButtonText}
+              {backButtonText}
             </button>
           </div>
 
-          {/* Filtres et Recherche */}
+          {/* Filtres et Recherche (inchangé) */}
           <div className="bg-white p-6 rounded-xl shadow-sm mb-8">
             <input 
               type="text" 
@@ -109,32 +93,27 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
             </div>
           </div>
 
-          {/* Grille des Projets avec traduction automatique */}
+          {/* Grille des Projets (inchangé) */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredProjects.map((project) => {
-              // Logique du badge Client/Statut
               const projectSource = project.client || 'Inconnu'; 
               const isPersonal = projectSource === 'Projet Personnel' || projectSource === 'Freelance';
               const badgeBg = isPersonal ? 'bg-blue-900/20' : 'bg-green-100';
               const badgeText = isPersonal ? 'text-blue-900' : 'text-green-700';
               
-              // Logique de validation du lien Live
               const isLiveUrlValid = project.liveUrl && project.liveUrl !== '#';
               
-              // Vérifier si l'URL est une image (extensions d'image courantes)
               const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'];
               const isImageUrl = isLiveUrlValid && imageExtensions.some(ext => 
                 project.liveUrl!.toLowerCase().endsWith(ext)
-              ) || (isLiveUrlValid && project.liveUrl!.includes('mastertableLogo')); // Vérification spécifique pour le logo
+              ) || (isLiveUrlValid && project.liveUrl!.includes('mastertableLogo'));
 
               return (
                 <div key={project.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition flex flex-col h-full">
                   
-                  {/* IFRAME, IMAGE ou ConstructionPreview */}
                   <div className="w-full h-[200px] border-b border-gray-200 bg-gray-100 relative overflow-hidden">
                     {isLiveUrlValid ? (
                       isImageUrl ? (
-                        // Afficher l'image qui couvre tout le div
                         <div className="w-full h-full">
                           <img 
                             src={project.liveUrl!} 
@@ -143,7 +122,6 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
                           />
                         </div>
                       ) : (
-                        // Afficher l'iframe pour les URLs web
                         <iframe 
                           src={project.liveUrl!} 
                           title={`Aperçu de ${project.title}`}
@@ -159,12 +137,9 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
                     )}
                   </div>
 
-                  {/* Carte de projet avec contenu traduit automatiquement */}
                   <div className="p-6 flex flex-col flex-grow">
-                    {/* En-tête avec titre et badge */}
                     <div className="flex items-center mb-3">
                       <h3 className="text-xl font-bold text-gray-900 mr-2">{project.title}</h3>
-                      {/* Badge Client/Statut */}
                       <span 
                         className={`${badgeBg} ${badgeText} text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0`}
                       >
@@ -212,7 +187,6 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
             })}
           </div>
 
-          {/* Message si aucun projet trouvé */}
           {filteredProjects.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">{noProjectsText}</p>
@@ -220,7 +194,6 @@ const AllProjectsPage: React.FC<AllProjectsPageProps> = ({ onBackClick }) => {
           )}
         </div>
 
-        {/* Bouton Scroll Top */}
         {showScrollToTop && (
           <button onClick={scrollToTop} className="fixed bottom-8 right-8 bg-blue-900 text-white p-3 rounded-full shadow-lg hover:bg-blue-800 transition z-50">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

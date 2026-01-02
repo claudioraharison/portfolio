@@ -177,8 +177,8 @@ const Projects: React.FC<ProjectsProps> = ({ onViewAllClick }) => {
         {shouldShowViewAllButton && (
             <div className="text-center mt-12">
               <a
-                href="#" // Pas de lien réel, la navigation est gérée par JavaScript
-                onClick={handleViewAllClick} // <-- Appel de la fonction parente
+                href="#"
+                onClick={handleViewAllClick}
                 className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-blue-900 hover:bg-blue-800 transition duration-300 transform hover:scale-105 cursor-pointer"
               >
                 {viewAllText}

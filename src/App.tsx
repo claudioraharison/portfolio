@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AutoTranslationProvider } from './contexts/AutoTranslationContext';
 import Header from './components/Header';
 import AllProjectsPage from './pages/AllProjects';
@@ -15,36 +16,16 @@ import Contact from './components/Contact';
 import SnowfallEffect from './components/SnowfallEffect';
 import './index.css';
 import VisitorCounter from './components/SimpleVisitorCounter';
-// import "slick-carousel/slick/slick.css"; 
-// import "slick-carousel/slick/slick-theme.css";
 
-const App: React.FC = () => {
-  const [isAllProjectsView, setIsAllProjectsView] = useState(false);
-  const scrollPositionRef = useRef(0);
-
-  // Fonction pour basculer vers la vue complète des projets
-  const switchToAllProjects = () => {
-    // Sauvegarder la position actuelle du scroll
-    scrollPositionRef.current = window.scrollY;
-    setIsAllProjectsView(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Fonction pour revenir à la vue d'accueil
-  const switchToHome = () => {
-    setIsAllProjectsView(false);
-    
-    // Utiliser setTimeout pour s'assurer que le DOM est mis à jour avant de restaurer la position
-    setTimeout(() => {
-      window.scrollTo({ 
-        top: scrollPositionRef.current, 
-        behavior: 'smooth' 
-      });
-    }, 100);
-  };
+// Composant Home
+const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   
-  // Contenu de la page d'accueil
-  const homeContent = (
+  const switchToAllProjects = () => {
+    navigate('/projects');
+  };
+
+  return (
     <>
       <Hero />
       <About />
@@ -55,21 +36,34 @@ const App: React.FC = () => {
       <VisitorCounter />
     </>
   );
-  
-  // Contenu de la page complète des projets
-  const allProjectsContent = (
-    <AllProjectsPage onBackClick={switchToHome} />
-  );
+};
+
+// Composant pour la gestion du Layout principal
+const MainLayout: React.FC = () => {
+  // Solution optimale: utiliser directement ou déstructurer
+  const { pathname } = useLocation();
+  const isAllProjectsView = pathname === '/projects';
 
   return (
-    <AutoTranslationProvider>
-      <div className="App">
-        {/* Passez la prop hideMenu au Header */}
-        <Header hideMenu={isAllProjectsView} />
-        <SnowfallEffect />
-        {isAllProjectsView ? allProjectsContent : homeContent}
-      </div>
-    </AutoTranslationProvider>
+    <div className="App">
+      <Header hideMenu={isAllProjectsView} />
+      <SnowfallEffect />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/projects" element={<AllProjectsPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <Router>
+      <AutoTranslationProvider>
+        <MainLayout />
+      </AutoTranslationProvider>
+    </Router>
   );
 };
 
